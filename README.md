@@ -8,6 +8,7 @@ Dot Your Future: Create, Connect, Transform
 
 - 🚀 我们为何相聚？
   这是一场专为开发者打造的深度探索之旅！我们邀请你拥抱 Polkadot，释放 Web3 的真正潜能。本次活动致力于推动平行链与多链生态创新，助力开发者基于 Polkadot 先进技术构建去中心化应用。无论你是初探 Web3，还是资深区块链开发者，这里都将成为你实现创想、对接全球资源的舞台。
+
 - 🌍 全球视野，亚洲力量：
   本次黑客松重磅成为波卡全球官方活动「Road to sub0」的亚洲核心站（Official Asia Hub），我们将与全球开发者共同迈向 Buenos Aires Sub0 盛会！
   - ✅ 你的项目，全球可见：优秀作品将纳入“Road to sub0”全球叙事，获得 Polkadot 生态空前曝光。
