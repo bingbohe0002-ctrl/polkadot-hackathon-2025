@@ -32,7 +32,7 @@ Dot Your Future: Create, Connect, Transform
 ### 赛道一：构建下一代 Web3 生态系统
 
 - 🛠️ 赛题提供方：OneBlock+
-  - OneBlock+
+  OneBlock+
   - OneBlock+ 是亚洲领先的 Polkadot 开发者社区，也是全球 Polkadot 生态中极具影响力的贡献者。专注于开发者教育、社区增长和治理倡议，致力于搭建全球 Polkadot 生态与中文开发者之间的重要桥梁。
 - 🎯 赛题任务
   - 参赛团队可基于 Polkadot 的多虚拟机环境，利用 REVM、现有 EVM 兼容环境，或 PolkaVM (PVM) 进行开发，构建具有创新性的去中心化应用 (dApp)。
@@ -58,11 +58,9 @@ Dot Your Future: Create, Connect, Transform
   - 可选：视频演示 (Optional Video Walkthrough)
   - 可提供一段短视频演示（建议 2–5 分钟），展示项目主要功能并阐述其设计目的。
 - 🚀 提交指南
-  
- - 更新 ing🥳 更多资讯请加我们的小助手 Emma@OneBlock+（WeChat：oneblockEmma）
+  - 更新 ing🥳 更多资讯请加我们的小助手 Emma@OneBlock+（WeChat：oneblockEmma）
 
 - 🏆 奖项设置
-
   - 🥇 一等奖：500U\*1
   - 🥈 二等奖：300U\*1
   - 🥉 三等奖：200U\*1
