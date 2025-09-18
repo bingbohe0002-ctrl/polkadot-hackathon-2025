@@ -101,7 +101,7 @@ Dot Your Future: Create, Connect, Transform
 
 - 🚀 提交指南
   - 访问 Bifrost Mono Repo - Issues
-  - 使用提案模板撰写项目方案，并在标题末尾标注：Dot Your Future: The Builder Party Hackathon
+  - 使用提案模板撰写项目方案，并在标题末尾标注：Dot Your Future: Create, Connect, Transform
   - 提案经审核通过（标记为“Approved”）后，请在 2-3 小时内完成项目构建
   - 开发完成后，在原 Issue 中提交以下内容：
       - 开源代码库链接
