@@ -31,17 +31,17 @@ Dot Your Future: Create, Connect, Transform
 
 ### 赛道一：构建下一代 Web3 生态系统
 
-🛠️ 赛题提供方：OneBlock+
-OneBlock+
-OneBlock+ 是亚洲领先的 Polkadot 开发者社区，也是全球 Polkadot 生态中极具影响力的贡献者。专注于开发者教育、社区增长和治理倡议，致力于搭建全球 Polkadot 生态与中文开发者之间的重要桥梁。
-🎯 赛题任务
-参赛团队可基于 Polkadot 的多虚拟机环境，利用 REVM、现有 EVM 兼容环境，或 PolkaVM (PVM) 进行开发，构建具有创新性的去中心化应用 (dApp)。
-重点鼓励开发者尝试 REVM，这是 Polkadot 马上 product ready 执行环境，能够实现与以太坊生态工具（如 Foundry、Hardhat）高度兼容，帮助 Solidity 开发者无缝迁移和扩展。
-✅ 可实现方向（包括但不限于）
-创新型应用：DeFi 协议、NFT 市场、跨链工具、社交应用等；
-跨链集成：结合 Polkadot 原生功能（如 XCM、跨链资产调用）增强 dApp 能力；
-开发体验优化：在 REVM、EVM 或 PVM 上探索合约部署、交互与工具链改进；
-新范式探索：在 PVM 上尝试高性能智能合约或新型应用逻辑，展示 Polkadot 在下一代 VM 上的潜力。
+- 🛠️ 赛题提供方：OneBlock+
+  - OneBlock+
+  - OneBlock+ 是亚洲领先的 Polkadot 开发者社区，也是全球 Polkadot 生态中极具影响力的贡献者。专注于开发者教育、社区增长和治理倡议，致力于搭建全球 Polkadot 生态与中文开发者之间的重要桥梁。
+- 🎯 赛题任务
+  - 参赛团队可基于 Polkadot 的多虚拟机环境，利用 REVM、现有 EVM 兼容环境，或 PolkaVM (PVM) 进行开发，构建具有创新性的去中心化应用 (dApp)。
+  - 重点鼓励开发者尝试 REVM，这是 Polkadot 马上 product ready 执行环境，能够实现与以太坊生态工具（如 Foundry、Hardhat）高度兼容，帮助 Solidity 开发者无缝迁移和扩展。
+- ✅ 可实现方向（包括但不限于）
+ - 创新型应用：DeFi 协议、NFT 市场、跨链工具、社交应用等；
+ - 跨链集成：结合 Polkadot 原生功能（如 XCM、跨链资产调用）增强 dApp 能力；
+ - 开发体验优化：在 REVM、EVM 或 PVM 上探索合约部署、交互与工具链改进；
+ - 新范式探索：在 PVM 上尝试高性能智能合约或新型应用逻辑，展示 Polkadot 在下一代 VM 上的潜力。
 - ⚖️ 评审标准
   - 技术实现：代码质量、架构合理性与功能完整性；
   - 创新性：产品设计或技术方案的独创性与实用价值；
@@ -59,7 +59,7 @@ OneBlock+ 是亚洲领先的 Polkadot 开发者社区，也是全球 Polkadot �
   - 可提供一段短视频演示（建议 2–5 分钟），展示项目主要功能并阐述其设计目的。
 - 🚀 提交指南
   
-  更新 ing🥳 更多资讯请加我们的小助手 Emma@OneBlock+（WeChat：oneblockEmma）
+ - 更新 ing🥳 更多资讯请加我们的小助手 Emma@OneBlock+（WeChat：oneblockEmma）
 
 - 🏆 奖项设置
 
