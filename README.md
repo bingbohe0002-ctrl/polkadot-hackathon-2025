@@ -11,9 +11,6 @@ Dot Your Future: Create, Connect, Transform
 
 - 🌍 全球视野，亚洲力量：
   本次黑客松重磅成为波卡全球官方活动「Road to sub0」的亚洲核心站（Official Asia Hub），我们将与全球开发者共同迈向 Buenos Aires Sub0 盛会！
-  - ✅ 你的项目，全球可见：优秀作品将纳入“Road to sub0”全球叙事，获得 Polkadot 生态空前曝光。
-  - ✅ 直达国际舞台：优胜团队有机会获得 Sub0 大会官方通道与赞助，亮相世界级开发者盛会！
-  - ✅ 共享顶尖资源：与 Parity 技术团队、波卡全球建设者实时互动，获取最前沿的技术指导与生态支持。
   - 🚀 了解全球“Road to sub0”活动：https://www.roadtosub0.com
 
 ## 总奖金池
