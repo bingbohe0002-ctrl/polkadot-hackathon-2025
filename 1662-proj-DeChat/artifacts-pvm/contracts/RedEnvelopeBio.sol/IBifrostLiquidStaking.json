@@ -1,0 +1,24 @@
+{
+  "_format": "hh-resolc-artifact-1",
+  "contractName": "IBifrostLiquidStaking",
+  "sourceName": "contracts/RedEnvelopeBio.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "stake",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "vAmount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
