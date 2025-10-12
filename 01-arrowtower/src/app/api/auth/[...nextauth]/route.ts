@@ -1,0 +1,187 @@
+// app/api/auth/[...nextauth]/route.ts
+
+import NextAuth from "next-auth";
+import type { JWT as NextAuthJWT } from "next-auth/jwt";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { verifyMessage } from "viem";
+//import { PrismaClient } from "@prisma/client";
+import { createHash } from "crypto";
+import { checkUserExists, autoRegisterUser } from "@/lib/db/auth";
+
+// ----------------------------------------------------
+// Prisma 客户端（HMR 兼容）
+// ----------------------------------------------------
+/* const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const prisma = globalForPrisma.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+ */
+
+// ----------------------------------------------------
+// 类型定义
+// ----------------------------------------------------
+type Role = "admin" | "user";
+// ✅ 添加这个局部类型定义
+type User = {
+  id: string;
+  name?: string | null;
+  address: string;
+  status: string;
+  role: Role;
+};
+
+
+// 生成唯一 ID（用于自动注册）
+function generateId(data: string): string {
+  return createHash("sha256")
+    .update(data)
+    .digest("hex")
+    .substring(0, 32);
+}
+
+// ----------------------------------------------------
+// 检查用户是否存在或自动注册
+// ----------------------------------------------------
+async function getUserOrRegister(address: string): Promise<User | null> {
+  const lowerCaseAddress = address.toLowerCase();
+
+  try {
+    // 先检查用户是否存在
+    const existingUser = await checkUserExists(lowerCaseAddress);
+    
+    if (existingUser.success) {
+      return {
+        id: existingUser.id!,
+        name: existingUser.name!,
+        address: lowerCaseAddress,
+        status: "approved",
+        role: existingUser.role as Role,
+      };
+    }
+
+    // 用户不存在 → 自动注册
+    const newUser = await autoRegisterUser(lowerCaseAddress);
+
+    if (newUser) {
+      return {
+        id: newUser.id,
+        name: newUser.name,
+        address: lowerCaseAddress,
+        status: "approved",
+        role: newUser.role as Role,
+      };
+    }
+
+    // 自动注册失败
+    return null;
+  } catch (error: any) {
+    console.error("获取或注册用户失败:", error);
+    return null;
+  }
+}
+// 👇 将 NextAuth 配置提取为可导出的 authOptions
+export const authOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Ethereum Wallet",
+      credentials: {
+        address: { label: "Wallet Address", type: "text", placeholder: "0x..." },
+        signature: { label: "Signature", type: "text" },
+      },
+      async authorize(credentials) {
+        try {
+          if (!credentials?.address || !credentials?.signature) {
+            console.warn("[AUTH] 缺少地址或签名");
+            return null;
+          }
+
+          const message = "login arrowtower";
+          const address = credentials.address as `0x${string}`;
+          const signature = credentials.signature as `0x${string}`;
+
+          // ✅ 验证签名
+          const isValidSignature = await verifyMessage({ address, message, signature });
+          if (!isValidSignature) {
+            console.warn("[AUTH] 签名无效:", address);
+            return null;
+          }
+
+          // ✅ 获取用户（不存在则自动注册）
+          const user = await getUserOrRegister(address);
+          if (!user) {
+            console.error("[AUTH] 获取/注册用户失败:", address);
+            return null;
+          }
+
+          console.log("[AUTH] 认证成功:", user.name);
+          return user;
+        } catch (error) {
+          console.error("[AUTH] 认证过程出错:", error);
+          return null;
+        }
+      },
+    }),
+  ],
+
+  // ----------------------------------------------------
+  // JWT 回调：将用户信息写入 token
+  // ----------------------------------------------------
+  callbacks: {
+    async jwt({ token, user }: { 
+      token: NextAuthJWT & User;  // ✅ 使用重命名后的 JWT 类型
+      user?: User;
+    }) {
+      if (user) {
+        token.id = user.id;
+        token.name = user.name ?? `User_${user.address.slice(-6)}`;
+        token.address = user.address;
+        token.status = user.status;
+        token.role = user.role;
+      }
+      return token;
+    },
+
+    async session({ 
+      session, 
+      token 
+    }: { 
+      session: { 
+        user: User & { 
+          id: string; 
+          address: string; 
+          status: string; 
+          role: "admin" | "user"; 
+        }; 
+        expires: string 
+      }; 
+      token: NextAuthJWT & User 
+    }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.name = token.name ?? `User_${token.address.slice(-6)}`;
+        session.user.address = token.address;
+        session.user.status = token.status;
+        session.user.role = token.role;
+      }
+
+      return session; // ✅ 自动包含 expires
+    },
+  },
+
+  // ----------------------------------------------------
+  // 其他配置
+  // ----------------------------------------------------
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/auth/signin", // 可选：自定义登录页
+  },
+  session: {
+    strategy: "jwt" as const,
+    maxAge: 30 * 24 * 60 * 60, // 30 天
+  },
+};
+
+// 创建处理程序
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
