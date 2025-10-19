@@ -1,6 +1,15 @@
 # ArrowTower
 
 ![Snapshot](./pic/Snapshot.PNG)
+## 团队情况
+### 团队名称
+  * 陌生人草台班子 (Random assembly)
+### 团队成员
+* Alice 
+* jackzdh
+* Jolin
+* Yuuki
+
 ## 📖 项目简介
 
 ArrowTower 是一个基于 Polkadot 生态的地理位置打卡平台，通过**零 Gas 费**后端代铸造技术，让用户无门槛体验 Web3。首期聚焦箭塔村乡村旅游场景，游客完成特色路线打卡和互动任务后，系统自动发放独特 NFT 数字纪念品，无需用户了解Gas费或支付费用，学习钱包使用与签名。
