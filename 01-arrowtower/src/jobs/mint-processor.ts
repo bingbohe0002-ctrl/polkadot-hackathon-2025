@@ -26,7 +26,7 @@ async function startWorker() {
 }
 
 
-async function generateVoucherMetadata(voucherId: string) {
+async function generateVoucherMetadata(voucherId: string,nfttokenid:string) {
   console.log('---------metedata');
   try {
     // 执行等价于你 SQL 的查询
@@ -42,6 +42,11 @@ async function generateVoucherMetadata(voucherId: string) {
     if (!result) {
       throw new Error('Voucher not found');
     }
+
+    console.log("voucherId:",voucherId);
+    console.log("nfttokenid:",nfttokenid);
+    console.log('-----------');
+    console.log("result:",result);
 
     const { user, route } = result;
 
@@ -72,8 +77,8 @@ async function generateVoucherMetadata(voucherId: string) {
 
     // 构造 metadata JSON（符合你的 Metadata 模型）
     const metadata = {
-      name: `Completion Badge: ${route.name}`,
-      description: `NFT awarded to ${user.nickname} (${user.walletAddress}) for completing the route "${route.name}". Verified via on-chain check-ins at multiple points of interest.`,
+      name: `Completion Badge: ${route.name} #${nfttokenid}`,
+      description: `NFT awarded to  (${user.walletAddress}) for completing the route ${route.name}. Verified via on-chain check-ins at multiple points of interest.`,
       image: `https://arrowtower.netlify.app/pic/img_${img_ramdom}.svg`,
       external_url: `https://arrowtower.netlify.app/user/${user.id}/route/${route.id}`,
       background_color: "000000",
@@ -85,16 +90,12 @@ async function generateVoucherMetadata(voucherId: string) {
           value: route.name,
         },
         {
-          trait_type: "User",
-          value: user.nickname,
-        },
-        {
           trait_type: "Wallet Address",
           value: user.walletAddress,
         },
         {
           trait_type: "Completion Status",
-          value: result.status,
+          value: "Completed",
         },
         {
           trait_type: "POIs Visited",
@@ -110,8 +111,7 @@ async function generateVoucherMetadata(voucherId: string) {
         },
       ]),
 
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    
     };
     
     console.log(metadata);
@@ -148,7 +148,7 @@ async function processMintTask(voucherId: string) {
     console.log('mintForUser铸造函数result : ',result);
 
     // 生成 metaData信息
-    const metadata = await generateVoucherMetadata(voucherId);
+    const metadata = await generateVoucherMetadata(voucherId, result?.tokenId);
 
     // ✅ 更新凭证状态
     await prisma.voucher.update({
