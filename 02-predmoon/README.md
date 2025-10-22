@@ -11,7 +11,7 @@
 ## 二、参赛队伍填写区 (Fill-in Template)
 
 ### 1) 项目概述 (Overview)
-
+- **deck**: https://www.popai.pro/ppt-share?shareKey=a056195425a5ba622c00b4db784aa2231ef5f49e5c439399886561ea1fa5e953&utm_source=presentationsharepage
 - **项目名称**：Predmoon
 - **一句话介绍**：A prediction market platform that users could trade by their belifs and knowledges
 - **目标用户**：All crypto users
