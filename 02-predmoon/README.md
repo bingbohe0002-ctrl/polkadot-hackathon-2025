@@ -1,4 +1,4 @@
-# [Predmoon] - kaia 2025
+# [Predmoon] - polkadot-hackathon-2025
 
 
 ## 一、提交物清单 (Deliverables)
@@ -8,7 +8,7 @@
 - [x] 在线演示链接
 - [x] 合约部署信息
 
-## 二、参赛队伍填写区 (Fill-in Template)
+## 二、参赛队伍填写区
 
 ### 1) 项目概述 (Overview)
 - **deck**: https://www.popai.pro/ppt-share?shareKey=a056195425a5ba622c00b4db784aa2231ef5f49e5c439399886561ea1fa5e953&utm_source=presentationsharepage
