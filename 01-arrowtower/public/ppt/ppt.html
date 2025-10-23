@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,13 +12,13 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #a7f3d0 100%);
             color: #065f46;
             overflow-x: hidden;
         }
-        
+
         .slide {
             width: 100vw;
             height: 100vh;
@@ -28,13 +29,13 @@
             padding: 2rem;
             position: relative;
         }
-        
+
         .slide-content {
             max-width: 1200px;
             width: 90%;
             text-align: center;
         }
-        
+
         h1 {
             font-size: 4rem;
             font-weight: 800;
@@ -44,57 +45,60 @@
             -webkit-text-fill-color: transparent;
             text-shadow: 0 4px 6px rgba(5, 150, 105, 0.1);
         }
-        
+
         h2 {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
             color: #065f46;
         }
-        
+
         h3 {
             font-size: 2rem;
             font-weight: 600;
             margin-bottom: 1rem;
             color: #065f46;
         }
-        
+
         p {
             font-size: 1.25rem;
             line-height: 1.6;
             margin-bottom: 1.5rem;
             color: #374151;
         }
-        
-        .feature-list, .scenario-list {
+
+        .feature-list,
+        .scenario-list {
             text-align: left;
             max-width: 800px;
             margin: 0 auto;
         }
-        
-        .feature-list li, .scenario-list li {
+
+        .feature-list li,
+        .scenario-list li {
             font-size: 1.1rem;
             line-height: 1.6;
             margin-bottom: 1rem;
             padding-left: 1.5rem;
             position: relative;
         }
-        
-        .feature-list li:before, .scenario-list li:before {
+
+        .feature-list li:before,
+        .scenario-list li:before {
             content: "✓";
             position: absolute;
             left: 0;
             color: #10b981;
             font-weight: bold;
         }
-        
+
         .tech-stack {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
         }
-        
+
         .tech-category {
             background: white;
             border-radius: 12px;
@@ -102,26 +106,26 @@
             box-shadow: 0 4px 6px rgba(5, 150, 105, 0.1);
             border: 1px solid #a7f3d0;
         }
-        
+
         .tech-category h4 {
             color: #065f46;
             margin-bottom: 1rem;
             font-size: 1.25rem;
         }
-        
+
         .tech-category ul {
             list-style-type: none;
         }
-        
+
         .tech-category li {
             padding: 0.5rem 0;
             border-bottom: 1px solid #d1fae5;
         }
-        
+
         .tech-category li:last-child {
             border-bottom: none;
         }
-        
+
         .center-image {
             max-width: 600px;
             width: 100%;
@@ -130,18 +134,18 @@
             overflow: hidden;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* 小尺寸图片样式 */
         .small-image {
             max-width: 400px !important;
         }
-        
+
         .center-image img {
             width: 100%;
             height: auto;
             display: block;
         }
-        
+
         .team-members {
             display: flex;
             flex-wrap: wrap;
@@ -149,12 +153,12 @@
             gap: 2rem;
             margin-top: 2rem;
         }
-        
+
         .team-member {
             text-align: center;
             width: 150px;
         }
-        
+
         .team-member img {
             width: 120px;
             height: 120px;
@@ -164,18 +168,18 @@
             border: 4px solid #10b981;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         .architecture {
             width: 100%;
             max-width: 800px;
             margin: 2rem auto;
         }
-        
+
         .architecture svg {
             width: 100%;
             height: auto;
         }
-        
+
         .btn {
             display: inline-block;
             background: linear-gradient(to right, #10b981, #059669);
@@ -187,13 +191,14 @@
             margin-top: 1rem;
             box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
             transition: all 0.3s ease;
+            margin: 0.5rem;
         }
-        
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(5, 150, 105, 0.3);
         }
-        
+
         .navigation {
             position: fixed;
             bottom: 2rem;
@@ -202,7 +207,7 @@
             gap: 1rem;
             z-index: 100;
         }
-        
+
         .nav-btn {
             background: #10b981;
             color: white;
@@ -217,12 +222,12 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
-        
+
         .nav-btn:hover {
             background: #059669;
             transform: scale(1.1);
         }
-        
+
         .slide-counter {
             position: fixed;
             bottom: 2rem;
@@ -233,14 +238,14 @@
             font-weight: 600;
             color: #065f46;
         }
-        
+
         .scenario-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
         }
-        
+
         .scenario-card {
             background: white;
             border-radius: 12px;
@@ -250,12 +255,12 @@
             text-align: left;
             transition: all 0.3s ease;
         }
-        
+
         .scenario-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 15px rgba(5, 150, 105, 0.2);
         }
-        
+
         .scenario-card h4 {
             color: #065f46;
             margin-bottom: 1rem;
@@ -264,13 +269,13 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .highlight-card {
             background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
             border: 2px solid #10b981;
             position: relative;
         }
-        
+
         .highlight-card:before {
             content: "首期场景";
             position: absolute;
@@ -283,17 +288,103 @@
             font-size: 0.8rem;
             font-weight: bold;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         .fade-in {
             animation: fadeIn 0.8s ease forwards;
         }
+
+        /* 新增：合作伙伴logo样式 */
+        .partners-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .partner-logo {
+            height: 80px;
+            width: auto;
+            max-width: 180px;
+            object-fit: contain;
+            filter: grayscale(20%);
+            transition: all 0.3s ease;
+        }
+
+        .partner-logo:hover {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+
+        /* 鸣谢标题样式 */
+        .acknowledgement-title {
+            font-size: 2.5rem;
+            color: #065f46;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        /* 添加在现有的 CSS 中 */
+        .larger-image {
+            max-width: 700px !important;
+            /* 或者你想要的更大尺寸 */
+        }
+
+        /* 或者更具体的针对第三页的样式 */
+        #slide3 .center-image {
+            max-width: 700px !important;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        /* 链接样式 */
+        .links-container {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #065f46;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .link-item:hover {
+            color: #059669;
+        }
+        
+        .link-icon {
+            font-size: 1.2rem;
+        }
     </style>
 </head>
+
 <body>
     <!-- 封面页 -->
     <section class="slide" id="slide1">
@@ -306,7 +397,7 @@
             <p>零 Gas 费 · 零门槛 · 地理位置验证 · NFT 纪念品</p>
         </div>
     </section>
-    
+
     <!-- 团队介绍 -->
     <section class="slide" id="slide2">
         <div class="slide-content fade-in">
@@ -330,47 +421,59 @@
                     <p>Yuuki</p>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <!-- 视频跳转页 -->
-    <section class="slide" id="slide3">
-        <div class="slide-content fade-in">
-            <h2>项目演示</h2>
-            <div class="center-image small-image">
-                <img src="/map.svg" alt="箭塔村地图">
+            <div class="links-container">
+                <a href="https://github.com/easyshellworld/arrowtower-dapp" class="link-item" target="_blank">
+                    <span class="link-icon">🔗</span>
+                    <span>GitHub 项目地址: https://github.com/easyshellworld/arrowtower-dapp</span>
+                </a>
+                <a href="https://arrowtower.netlify.app/" class="link-item" target="_blank">
+                    <span class="link-icon">🔗</span>
+                    <span>演示网站: https://arrowtower.netlify.app/</span>
+                </a>
             </div>
-            <p>体验箭塔村特色旅游路线，完成打卡获取 NFT 纪念品</p>
-            <a href="https://arrowtower.netlify.app/" class="btn" target="_blank">访问演示网站</a>
         </div>
     </section>
-    
+
     <!-- 项目简介 -->
-    <section class="slide" id="slide4">
+    <section class="slide" id="slide3">
         <div class="slide-content fade-in">
             <h2>项目简介</h2>
             <p>ArrowTower 是一个基于 Polkadot 生态的地理位置打卡平台，通过<strong>零 Gas 费</strong>后端代铸造技术，让用户无门槛体验 Web3。</p>
-            <p>首期聚焦箭塔村乡村旅游场景，游客完成特色路线打卡和互动任务后，系统自动发放独特 NFT 数字纪念品，无需用户了解钱包或支付费用。</p>
-            <p>平台可快速拓展至 <strong>Web3 会展活动</strong>、<strong>城市文旅探索</strong>、<strong>教育研学</strong>、<strong>商业营销</strong>、<strong>公益活动</strong> 等多个商业场景。</p>
+            <p>首期聚焦箭塔村乡村旅游场景，游客完成特色路线打卡和互动任务后，系统自动发放独特 NFT 数字纪念品，无需用户了解Gas费或支付费用，学习钱包使用与签名。</p>
+            <p>平台可快速拓展至 <strong>Web3 会展活动</strong>、<strong>城市文旅探索</strong>、<strong>教育研学</strong>、<strong>商业营销</strong>、<strong>公益活动</strong> 等多个商业场景。通过链上身份验证和可验证数字凭证，为文旅、会展、教育、营销等行业提供创新的用户互动和数字资产解决方案。</p>
         </div>
     </section>
-    
+
+    <!-- 项目演示 -->
+    <section class="slide" id="slide4">
+        <div class="slide-content fade-in">
+            <h2>项目演示</h2>
+            <div class="center-image larger-image">
+                <img src="/ppt/group.svg" alt="箭塔村地图">
+            </div>
+            <p>体验箭塔村特色旅游路线，完成打卡获取 NFT 纪念品</p>
+        </div>
+    </section>
+
     <!-- 核心特性 -->
     <section class="slide" id="slide5">
         <div class="slide-content fade-in">
             <h2>核心特性</h2>
             <ul class="feature-list">
-                <li><strong>🎁 零 Gas 费体验</strong>：基于 PolkaVM 的后端代铸造技术，用户无需支付任何 Gas 费用</li>
-                <li><strong>🚀 零门槛接入</strong>：用户无需了解钱包操作，系统自动发放 NFT</li>
-                <li><strong>📍 地理位置验证</strong>：支持 GPS 定位和二维码扫描双重验证</li>
-                <li><strong>🎨 互动任务系统</strong>：拍照上传、知识问答、文化体验等多样化任务</li>
-                <li><strong>🏆 成就与 NFT</strong>：完成路线自动铸造独特数字纪念品</li>
-                <li><strong>🔗 链上可验证</strong>：所有记录上链，可追溯、可验证、不可篡改</li>
-                <li><strong>⚡ PolkaVM 驱动</strong>：基于 Polkadot Hub Testnet，享受高性能低成本优势</li>
+                <li><strong>🎁 零 Gas 费体验</strong>：基于 PolkaVM 后端代铸造技术，用户无需支付 Gas</li>
+                <li><strong>🚀 即刻生效</strong>：Fork 或克隆项目后，拉起 Docker 镜像即可进入系统，真正做到开箱即用</li>
+                <li><strong>🔧 多部署形式</strong>：支持 Docker 部署、Kubernetes 部署、GitHub Actions 一键 CI/CD 上线</li>
+                <li><strong>🔄 队列铸造机制</strong>：支持事务队列、批量 NFT 铸造 (queue-minting)，可应对高并发场景</li>
+                <li><strong>🖥️ 前端可部署合约</strong>：前端界面支持 UI 配置合约地址与 ABI，无需后端改造即可切换不同 NFT 合约</li>
+                <li><strong>📍 地理位置＋二维码校验打卡</strong>：支持 GPS 定位校验 + 二维码扫描，多重验证保障打卡有效性</li>
+                <li><strong>🎨 互动任务系统</strong>：拍照上传、知识问答、任务打卡、成就解锁等，提升用户参与感</li>
+                <li><strong>📊 数据统计看板</strong>：实时统计用户行为、任务进度、铸造量、打卡人数等链上 + 线下数据</li>
+                <li><strong>🧩 模块化可复用</strong>：任务系统、打卡系统、NFT 模块、数据统计模块均可拆分复用</li>
+                <li><strong>⚡ PolkaVM 驱动</strong>：基于 PolkaVM 在 Polkadot 生态的测试网运行，享受高性能 ＋ 低成本优势</li>
             </ul>
         </div>
     </section>
-    
+
     <!-- 应用场景 -->
     <section class="slide" id="slide6">
         <div class="slide-content fade-in">
@@ -409,7 +512,7 @@
             </div>
         </div>
     </section>
-    
+
     <!-- 技术架构 -->
     <section class="slide" id="slide7">
         <div class="slide-content fade-in">
@@ -444,32 +547,37 @@
             <div class="architecture">
                 <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
                     <!-- 系统架构图 -->
-                    <rect x="50" y="50" width="700" height="300" fill="none" stroke="#10b981" stroke-width="2" rx="10"/>
-                    
+                    <rect x="50" y="50" width="700" height="300" fill="none" stroke="#10b981" stroke-width="2"
+                        rx="10" />
+
                     <!-- 用户界面层 -->
-                    <rect x="100" y="80" width="600" height="50" fill="#ecfdf5" stroke="#10b981" stroke-width="1"/>
+                    <rect x="100" y="80" width="600" height="50" fill="#ecfdf5" stroke="#10b981" stroke-width="1" />
                     <text x="400" y="110" text-anchor="middle" fill="#065f46" font-weight="bold">用户界面层 (Next.js)</text>
-                    <text x="400" y="130" text-anchor="middle" fill="#374151" font-size="14">React + Tailwind CSS + shadcn/ui</text>
-                    
+                    <text x="400" y="130" text-anchor="middle" fill="#374151" font-size="14">React + Tailwind CSS +
+                        shadcn/ui</text>
+
                     <!-- 区块链交互层 -->
-                    <rect x="150" y="150" width="500" height="50" fill="#d1fae5" stroke="#10b981" stroke-width="1"/>
-                    <text x="400" y="180" text-anchor="middle" fill="#065f46" font-weight="bold">区块链交互层 (wagmi + viem)</text>
+                    <rect x="150" y="150" width="500" height="50" fill="#d1fae5" stroke="#10b981" stroke-width="1" />
+                    <text x="400" y="180" text-anchor="middle" fill="#065f46" font-weight="bold">区块链交互层 (wagmi +
+                        viem)</text>
                     <text x="400" y="200" text-anchor="middle" fill="#374151" font-size="14">用户钱包连接与交易签名</text>
-                    
+
                     <!-- 业务逻辑层 -->
-                    <rect x="200" y="220" width="400" height="50" fill="#a7f3d0" stroke="#10b981" stroke-width="1"/>
-                    <text x="400" y="250" text-anchor="middle" fill="#065f46" font-weight="bold">业务逻辑层 (API Routes + NextAuth)</text>
+                    <rect x="200" y="220" width="400" height="50" fill="#a7f3d0" stroke="#10b981" stroke-width="1" />
+                    <text x="400" y="250" text-anchor="middle" fill="#065f46" font-weight="bold">业务逻辑层 (API Routes +
+                        NextAuth)</text>
                     <text x="400" y="270" text-anchor="middle" fill="#374151" font-size="14">地理位置验证 | 任务管理 | 数据统计</text>
-                    
+
                     <!-- 数据持久层 -->
-                    <rect x="250" y="290" width="300" height="50" fill="#6ee7b7" stroke="#10b981" stroke-width="1"/>
-                    <text x="400" y="320" text-anchor="middle" fill="#065f46" font-weight="bold">数据持久层 (Prisma + Database)</text>
+                    <rect x="250" y="290" width="300" height="50" fill="#6ee7b7" stroke="#10b981" stroke-width="1" />
+                    <text x="400" y="320" text-anchor="middle" fill="#065f46" font-weight="bold">数据持久层 (Prisma +
+                        Database)</text>
                     <text x="400" y="340" text-anchor="middle" fill="#374151" font-size="14">用户数据 | 打卡记录 | 任务进度</text>
                 </svg>
             </div>
         </div>
     </section>
-    
+
     <!-- 核心功能模块 -->
     <section class="slide" id="slide8">
         <div class="slide-content fade-in">
@@ -477,91 +585,86 @@
             <div class="scenario-grid">
                 <div class="scenario-card">
                     <h4>🔑 用户认证模块</h4>
-                    <p>钱包连接、签名验证、会话管理</p>
+                    <p>钱包连接、签名认证 + 会话管理（NextAuth）</p>
                 </div>
                 <div class="scenario-card">
                     <h4>📍 地理位置打卡模块</h4>
-                    <p>GPS定位验证、二维码扫描、打卡记录上链</p>
+                    <p>GPS 定位校验、二维码 QR 扫描校验、打卡记录同步至链上</p>
                 </div>
                 <div class="scenario-card">
                     <h4>🎯 任务系统模块</h4>
-                    <p>任务创建与管理、进度跟踪、成就系统</p>
+                    <p>创建／编辑任务路线（如拍照上传、问答、打卡）、奖励触发器（完成任务自动触发 NFT 铸造）</p>
                 </div>
                 <div class="scenario-card">
                     <h4>🎨 NFT 铸造模块</h4>
-                    <p>后端代铸造、高性能铸造、NFT分发管理</p>
+                    <p>后端代铸造（用户无需 Gas），可批量队列铸造、前端配置合约地址/ABI、铸造结果记录链上</p>
                 </div>
                 <div class="scenario-card">
                     <h4>📊 数据统计模块</h4>
-                    <p>实时数据看板、用户行为分析、活动效果统计</p>
+                    <p>实时统计用户打卡、任务完成、铸造量、活跃度、参与率等指标、链上数据 + 本地数据库数据融合展示</p>
+                </div>
+                <div class="scenario-card">
+                    <h4>🚀 部署运维模块</h4>
+                    <p>提供 Dockerfile ＋ docker-compose 配置，一键启动服务、支持 GitHub Actions／GitLab CI 一键构建 & 部署流程</p>
                 </div>
             </div>
         </div>
     </section>
-    
-    <!-- 设计理念 -->
+
+    <!-- 致谢页 -->
     <section class="slide" id="slide9">
         <div class="slide-content fade-in">
-            <h2>设计理念</h2>
-            <ul class="feature-list">
-                <li><strong>用户体验优先</strong>：简化 Web3 操作流程，让普通用户也能轻松使用</li>
-                <li><strong>零门槛接入</strong>：无需了解区块链知识，系统自动处理所有复杂操作</li>
-                <li><strong>场景化设计</strong>：针对不同应用场景提供定制化解决方案</li>
-                <li><strong>可扩展架构</strong>：模块化设计，易于扩展新功能和新场景</li>
-                <li><strong>PolkaVM 优势</strong>：充分利用 Polkadot 生态的互操作性和低成本优势</li>
-            </ul>
-        </div>
-    </section>
-    
-    <!-- 致谢页 -->
-    <section class="slide" id="slide10">
-        <div class="slide-content fade-in">
-            <h2>感谢观看</h2>
-            <div class="center-image small-image">
-                <img src="/ppt/wlogo.jpg" alt="致谢">
+            <h2 class="acknowledgement-title">感谢大家观看</h2>
+            <h2 class="acknowledgement-title">鸣谢</h2>
+            <div class="partners-container">
+                <img src="/ppt/polkadotlogo.png" alt="Polkadot" class="partner-logo">
+                <img src="/ppt/papermoon.png" alt="Papermoon" class="partner-logo">
+                <img src="/ppt/oneblock.jpg" alt="OneBlock" class="partner-logo">
+                <img src="/ppt/wlogo.jpg" alt="W Logo" class="partner-logo">
+                <img src="/ppt/nantang.webp" alt="W Logo" class="partner-logo">
             </div>
             <p>感谢 Polkadot 生态对 Web3 基础设施的支持</p>
             <p>感谢所有为本项目做出贡献的开发者和社区成员！</p>
         </div>
     </section>
-    
+
     <!-- 导航 -->
     <div class="navigation">
         <div class="nav-btn" id="prev-btn">←</div>
         <div class="nav-btn" id="next-btn">→</div>
     </div>
-    
-    <div class="slide-counter" id="slide-counter">1 / 10</div>
-    
+
+    <div class="slide-counter" id="slide-counter">1 / 9</div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const slides = document.querySelectorAll('.slide');
             const prevBtn = document.getElementById('prev-btn');
             const nextBtn = document.getElementById('next-btn');
             const slideCounter = document.getElementById('slide-counter');
             let currentSlide = 0;
-            
+
             // 初始化显示第一页
             showSlide(currentSlide);
-            
+
             // 上一页按钮事件
-            prevBtn.addEventListener('click', function() {
+            prevBtn.addEventListener('click', function () {
                 if (currentSlide > 0) {
                     currentSlide--;
                     showSlide(currentSlide);
                 }
             });
-            
+
             // 下一页按钮事件
-            nextBtn.addEventListener('click', function() {
+            nextBtn.addEventListener('click', function () {
                 if (currentSlide < slides.length - 1) {
                     currentSlide++;
                     showSlide(currentSlide);
                 }
             });
-            
+
             // 键盘导航
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', function (e) {
                 if (e.key === 'ArrowLeft') {
                     if (currentSlide > 0) {
                         currentSlide--;
@@ -574,7 +677,7 @@
                     }
                 }
             });
-            
+
             // 显示指定幻灯片
             function showSlide(index) {
                 slides.forEach((slide, i) => {
@@ -589,14 +692,15 @@
                         slide.style.display = 'none';
                     }
                 });
-                
+
                 // 更新计数器
                 slideCounter.textContent = `${index + 1} / ${slides.length}`;
-                
+
                 // 滚动到顶部
                 window.scrollTo(0, 0);
             }
         });
     </script>
 </body>
+
 </html>
