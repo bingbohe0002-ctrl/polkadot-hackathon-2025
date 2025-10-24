@@ -46,10 +46,10 @@ export async function createUser(
     const user = await prisma.user.create({
       data: {
         id: input.id,
-        walletAddress: input.walletAddress,
+        walletAddress: input.walletAddress.toLowerCase(),
         walletType: input.walletType,
         nickname: input.nickname,
-        avatar: input.avatar || 'default-avatar.png',
+        avatar: input.avatar || '/default-avatar.png',
       },
     });
 
@@ -113,7 +113,7 @@ export async function getUserByWalletAddress(
 ): Promise<OperationResult<UserResponse>> {
   try {
     const user = await prisma.user.findUnique({
-      where: { walletAddress },
+      where: { walletAddress: walletAddress.toLowerCase() },
     });
 
     if (!user) {
@@ -142,7 +142,13 @@ export async function getUserByWalletAddress(
 export async function getUsers(
   page = 1,
   pageSize = 10
-): Promise<OperationResult<{ users: UserResponse[]; total: number }>> {
+): Promise<{
+  success: boolean;
+  data?: { users: UserResponse[]; total: number };
+  page?: number;
+  pageSize?: number;
+  message?: string;
+}> {
   try {
     const skip = (page - 1) * pageSize;
 
@@ -157,10 +163,9 @@ export async function getUsers(
 
     return {
       success: true,
-      data: {
-        users,
-        total,
-      },
+      data: { users, total },
+      page,
+      pageSize,
     };
   } catch (error) {
     console.error('查询用户列表失败:', error);
@@ -170,7 +175,6 @@ export async function getUsers(
     };
   }
 }
-
 /**
  * 更新用户信息
  */
