@@ -8,7 +8,6 @@
 
 [![Live Demo](https://img.shields.io/badge/demo-live-success)](https://arrowtower.netlify.app/)[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=githubactions)](https://github.com/easyshellworld/arrowtower-dapp/actions)[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/easyshellworld/arrowtower-dapp/actions)[![Docker Ready](https://img.shields.io/badge/docker-ready-blue?logo=docker)](https://hub.docker.com/)
 
-
 ## 团队情况
 ### 团队名称
   * 陌生人草台班子 (Random Assembly)
@@ -18,11 +17,10 @@
 * Jolin
 * Yuuki
 
-
 ## 📖 项目简介
 
-ArrowTower 是一个基于 Polkadot 生态的地理位置打卡平台，通过**零 Gas 费**后端代铸造技术，让用户无门槛体验 Web3。首期聚焦箭塔村乡村旅游场景，游客完成特色路线打卡和互动任务后，系统自动发放独特 NFT 数字纪念品，无需用户了解Gas费或支付费用，学习钱包使用与签名。
-![Snapshot](./pic/Snapshot.PNG)
+ArrowTower 是一个基于 Polkadot 生态的地理位置打卡平台，支持一键式平台部署,多场景适用，通过**零 Gas 费**后端代铸造技术，让用户无门槛体验 Web3。首期聚焦箭塔村乡村旅游场景，游客完成特色路线打卡和互动任务后，系统自动发放独特 NFT 数字纪念品，无需用户了解Gas费或支付费用，学习钱包使用与签名。
+![Snapshot](./public/ppt/snapshot.png)
 
 平台可快速拓展至 **Web3 会展活动**、**城市文旅探索**、**教育研学**、**商业营销**、**公益活动** 等多个商业场景。通过链上身份验证和可验证数字凭证，为文旅、会展、教育、营销等行业提供创新的用户互动和数字资产解决方案。
 
@@ -120,8 +118,8 @@ ArrowTower 是一个基于 Polkadot 生态的地理位置打卡平台，通过**
 - **虚拟机**：PolkaVM
 - **测试网络**：Polkadot Hub Testnet
 - **智能合约**：
-  - Minter 合约：`0x079098fb8e901DE45AB510fA669bdE793DfEBD50`
-  - NFT 合约：`0x9373197B94f4633FBc121532F3cF3948FD4a5a15`
+  - Minter 合约：`0x079098fb8e901DE45AB510fA669bdE793DfEBD50`*(View on blockchain explorer: [Blockscout](https://blockscout-passet-hub.parity-testnet.parity.io/address/0x079098fb8e901DE45AB510fA669bdE793DfEBD50))*
+  - NFT 合约：`0x9373197B94f4633FBc121532F3cF3948FD4a5a15`  *(View on blockchain explorer: [Blockscout](https://blockscout-passet-hub.parity-testnet.parity.io/token/0x9373197B94f4633FBc121532F3cF3948FD4a5a15))*
 
 ![Snapshot](./pic/Snapshot2.PNG)
 
@@ -250,6 +248,9 @@ NEXT_PUBLIC_NFT_CONTRACT="0x9373197B94f4633FBc121532F3cF3948FD4a5a15"
 
 # 后端铸造私钥（仅服务端）
 PRIVATE_KEY="your_private_key"
+
+# 初始化使用
+ADMIN_ADDRESS="admin wallet addresss"
 ```
 
 **3.3 初始化数据库**
@@ -269,6 +270,89 @@ npm run dev
 **3.5 访问应用**
 
 打开浏览器访问 [http://localhost:3000](http://localhost:3000)
+
+
+
+## 🐳 Docker 一键部署（推荐）
+
+使用 Docker Compose 可以快速启动完整的生产级 ArrowTower 应用栈，包括 PostgreSQL 数据库和 Next.js 应用。
+
+### 1. 克隆项目
+
+```bash
+git clone https://github.com/easyshellworld/arrowtower-dapp.git
+cd arrowtower-dapp
+```
+
+### 2. 配置环境变量
+
+复制示例环境变量文件并根据实际情况修改：
+
+```bash
+cp .env.example .env
+```
+
+编辑 `.env` 文件，配置以下关键参数：
+
+```env
+# 数据库配置
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_secure_password
+POSTGRES_DB=arrowtower
+DATABASE_URL="postgresql://postgres:your_secure_password@postgres:5432/arrowtower?schema=public"
+
+# NextAuth 配置
+NEXTAUTH_SECRET="your_nextauth_secret_here"
+NEXTAUTH_URL="http://localhost:30000"
+
+# 网站基础配置
+NEXT_PUBLIC_ARROW_TOWER_BASE_URL="http://localhost:30000"
+
+# 智能合约地址
+NEXT_PUBLIC_MINTER_CONTRACT="0x079098fb8e901DE45AB510fA669bdE793DfEBD50"
+NEXT_PUBLIC_NFT_ADDRESS="0x9373197B94f4633FBc121532F3cF3948FD4a5a15"
+
+# 区块链配置
+PRIVATE_KEY="your_private_key_for_backend_minting"
+CHAIN_ID="420420421"
+RPC_URL="https://rpc.polkadot-hub-paseo-testnet.polkadot.io"
+NETWORK="polkadot-hub-paseo-testnet"
+
+
+# 初始化使用
+ADMIN_ADDRESS="admin wallet addresss"
+```
+
+### 3. 启动服务
+
+使用 Docker Compose 一键启动所有服务：
+
+```bash
+docker-compose up -d
+```
+
+这将自动：
+- 拉取并启动 PostgreSQL 16 数据库
+- 构建并启动 Next.js 应用
+- 配置网络和数据卷
+- 执行健康检查
+
+### 4. 验证部署
+
+检查服务状态：
+
+```bash
+docker-compose ps
+```
+
+查看应用日志：
+
+```bash
+docker-compose logs -f app
+```
+
+访问应用：打开浏览器访问 [http://localhost:30000](http://localhost:30000)
+
 
 ## 📦 项目结构
 
