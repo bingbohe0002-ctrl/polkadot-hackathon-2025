@@ -6,7 +6,7 @@ const { ethers } = require('ethers');
   // ========== 配置 ==========
   const RPC_URL = process.env.RPC_URL;
   const OWNER_PRIVATE_KEY = process.env.PRIVATE_KEY;
-  const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+  const CONTRACT_ADDRESS = "0x9E8e3572363469eA1bEdd9a9a674C723CAD7b002";
 
   if (!RPC_URL) throw new Error('请通过环境变量 RPC_URL 提供 RPC URL');
   if (!OWNER_PRIVATE_KEY) throw new Error('请通过环境变量 OWNER_PRIVATE_KEY 提供 owner 私钥');
