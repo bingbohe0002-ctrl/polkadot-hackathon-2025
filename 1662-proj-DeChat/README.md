@@ -47,5 +47,3 @@ https://docs.xmtp.org/chat-apps/sdks/browser#get-started-with-the-xmtp-browser-s
 5. 区块链：Polkadot  PVM
 六、交互说明
 image.png
-2. NFT及红包形象：
-七、交互操作：
