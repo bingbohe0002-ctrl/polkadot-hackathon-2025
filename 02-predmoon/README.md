@@ -30,7 +30,7 @@
   - 前端：Vue/Nuxt.js, ethers.js, Tailwind CSS, Privy.js
   - 后端：Node.js, Supabase, PostgreSQL
   - 合约：Solidity, Hardhat
-  - 部署：Vercel, AWS, Sepolia 测试网
+  - 部署：Vercel, AWS, 测试网
 
 ### 3) 合约与部署 (Contracts & Deployment)（如有）
 
@@ -48,17 +48,7 @@
 - **环境变量样例**：
 
 ```bash
-# frontend/.env.local
-NEXT_PUBLIC_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
-NEXT_PUBLIC_DEFAULT_CHAIN=11155111
-NEXT_PUBLIC_CONTRACT_ADDRESS=0x...
 
-# backend/.env
-RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
-PRIVATE_KEY=0x...
-PORT=3001
-DATABASE_URL=postgresql://...
-```
 
 - **一键启动（本地示例）**：
 
