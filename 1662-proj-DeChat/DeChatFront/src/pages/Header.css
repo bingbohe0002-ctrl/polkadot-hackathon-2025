@@ -1,0 +1,45 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1a1a2e;
+  color: white;
+  padding: 1rem 2rem;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-text {
+  background: linear-gradient(to right, #7b4397, #dc2430);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.main-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.funded-by {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  color: #a8a8c0;
+}
+
+.submit-report-btn {
+  background: none;
+  color: white;
+  border: 1px solid #dc2430;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-report-btn:hover {
+  background-color: #dc2430;
+}
