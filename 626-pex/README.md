@@ -1,6 +1,6 @@
 # PolkaVM Perpetual DEX
 
-基于 PolkaVM，完全开源链，DAO自治的链上DEX，采用完全链上撮合的 CLOB 订单簿模型。
+基于 PolkaVM，完全开源，DAO自治的链上DEX，采用完全链上撮合的 CLOB 订单簿模型。
 
 <p align="center">
   <img src="images/pex.png" alt="PEX 首页预览" />
