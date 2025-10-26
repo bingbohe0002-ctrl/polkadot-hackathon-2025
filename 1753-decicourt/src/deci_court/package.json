@@ -1,0 +1,31 @@
+{
+  "name": "decicourt",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js",
+    "deploy:passet": "npx hardhat run scripts/deploy-passet-hub.js --network passethub",
+    "deploy:quick": "npx hardhat run scripts/quick-deploy.js --network passethub",
+    "deploy:simple": "npx hardhat run scripts/deploy-simple.js --network passethub",
+    "test:deployment": "npx hardhat run scripts/test-deployment.js --network passethub",
+    "check": "npx hardhat run scripts/pre-deploy-check.js --network passethub",
+    "node": "npx hardhat node",
+    "clean": "npx hardhat clean"
+  },
+  "author": "alan",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@parity/hardhat-polkadot": "^0.1.9",
+    "hardhat": "^2.26.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^17.2.3",
+    "solc": "^0.8.30",
+    "web3": "^1.10.4"
+  }
+}
