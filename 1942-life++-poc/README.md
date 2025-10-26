@@ -215,8 +215,8 @@ Life++ PoC 是一个基于 Polkadot REVM 的**认知证明系统**，为 AI 代�
 
 ### 1. 克隆项目
 ```bash
-git clone <repository-url>
-cd polk-contract
+git clone https://github.com/OneBlockPlus/polkadot-hackathon-2025.git
+cd polkadot-hackathon-2025/1942-life++-poc
 ```
 
 ### 2. 安装依赖

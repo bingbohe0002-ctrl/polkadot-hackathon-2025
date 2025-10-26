@@ -192,8 +192,7 @@ Thumbs.db
 account/
 account/*.json
 
-# Deployment files (包含敏感信息)
-deployments/*.json
+# Deployment files (包含敏感信息)】
 deployments/*.txt
 
 # Backup files
