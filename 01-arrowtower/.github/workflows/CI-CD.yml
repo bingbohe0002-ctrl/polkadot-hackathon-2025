@@ -1,0 +1,96 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, dev]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # 检测是否有实际代码变更
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.filter.outputs.src }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'app/**'
+              - 'components/**'
+              - 'lib/**'
+              - 'prisma/**'
+              - 'public/**'
+              - 'package*.json'
+              - 'next.config.*'
+              - 'tsconfig.json'
+
+  quality-check:
+    runs-on: ubuntu-latest
+    needs: changes
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run lint
+        continue-on-error: true
+      - run: npx tsc --noEmit
+        continue-on-error: true
+      - run: npm test --if-present
+        continue-on-error: true
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: delpoy  
+    needs: [changes, quality-check]
+    if: |
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'push' &&
+      needs.changes.outputs.should_deploy == 'true'
+    steps:
+      - name: Debug secrets availability
+        run: |
+          echo "Checking if secrets are available..."
+          if [ -n "${{ secrets.COOLIFY_WEBHOOK_URL }}" ]; then
+            echo "✅ COOLIFY_WEBHOOK_URL is set"
+          else
+            echo "❌ COOLIFY_WEBHOOK_URL is NOT set"
+            exit 1
+          fi
+          if [ -n "${{ secrets.COOLIFY_TOKEN }}" ]; then
+            echo "✅ COOLIFY_TOKEN is set"
+          else
+            echo "❌ COOLIFY_TOKEN is NOT set"
+            exit 1
+          fi
+
+      - name: Trigger Coolify webhook
+        run: |
+          # 使用更简单的 curl 语法避免复杂 shell 脚本问题
+          status_code=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+            "${{ secrets.COOLIFY_WEBHOOK_URL }}")
+          
+          echo "Webhook response status: $status_code"
+          
+          if [ "$status_code" -eq 200 ] || [ "$status_code" -eq 201 ]; then
+            echo "✅ Deployment webhook triggered successfully"
+          else
+            echo "❌ Deployment webhook failed with status: $status_code"
+            exit 1
+          fi

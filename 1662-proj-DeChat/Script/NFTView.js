@@ -3,64 +3,24 @@ const { ethers } = require('ethers');
 
 // === 配置 ===
 const RPC_URL = process.env.RPC_URL;
-const CONTRACT_ADDRESS = '0x5b9f2eC8801C4E2Cbf4da95Fc3Ea8b2733dBB49F';
-const TOKEN_ID = 7;
+// NFT 合约地址
+const CONTRACT_ADDRESS = '0x9E8e3572363469eA1bEdd9a9a674C723CAD7b002';
+// 要查询的钱包地址
+const TARGET_ADDRESS = '0x07872604428e5a634f012a56f34d0965b9e12388'; // ← 改成要查询的钱包地址
 
-// 如果你的 Node 版本 < 18，请先安装 node-fetch
-let fetchFn = globalThis.fetch;
-if (!fetchFn) {
-  try {
-    fetchFn = require('node-fetch');
-  } catch (e) {
-    console.warn('⚠️ Node 没有 fetch，请安装 node-fetch');
-  }
-}
-
-// === 合约 ABI（仅需这两个函数） ===
+// === 合约 ABI（只需 balanceOf） ===
 const ABI = [
-  'function name() view returns (string)',
-  'function tokenURI(uint256 tokenId) view returns (string)'
+  'function balanceOf(address owner) view returns (uint256)'
 ];
 
-// === IPFS 工具函数 ===
-function ipfsToHttp(url) {
-  if (!url) return url;
-  if (url.startsWith('ipfs://')) {
-    return url.replace('ipfs://', 'https://ipfs.io/ipfs/');
-  }
-  return url;
-}
-
 async function main() {
-  const provider = new ethers.JsonRpcProvider(RPC_URL);
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
-
   try {
-    const name = await contract.name();
-    console.log('🧾 合约名称:', name);
+    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
 
-    const tokenURI = await contract.tokenURI(TOKEN_ID);
-    console.log('🔗 tokenURI:', tokenURI);
-
-    let metadata;
-    if (tokenURI.startsWith('data:application/json;base64,')) {
-      // base64 编码的 metadata
-      const base64Data = tokenURI.split(',')[1];
-      metadata = JSON.parse(Buffer.from(base64Data, 'base64').toString('utf8'));
-    } else {
-      // ipfs/http 链接
-      const url = ipfsToHttp(tokenURI);
-      const res = await fetchFn(url);
-      metadata = await res.json();
-    }
-
-    console.log('📦 NFT 元数据:');
-    console.log(JSON.stringify(metadata, null, 2));
-
-    if (metadata.image) {
-      console.log('🖼️ 图片链接:', ipfsToHttp(metadata.image));
-    }
-
+    const balance = await contract.balanceOf(TARGET_ADDRESS);
+    console.log(`🎯 钱包地址: ${TARGET_ADDRESS}`);
+    console.log(`💎 拥有的 NFT 数量: ${balance.toString()}`);
   } catch (err) {
     console.error('❌ 查询失败:', err);
   }
