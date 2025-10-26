@@ -1,0 +1,38 @@
+[
+  {
+    "token": "04e80eaa223a377220675369",
+    "groupId": "21028730fcd171eafdb10ff5b6941996",
+    "inviter": "0x313aE8a555d16F2D653440EF19212e9A342Acd0B",
+    "expiresAt": 1761384094002,
+    "used": false,
+    "nonce": null,
+    "lastUsedAt": null
+  },
+  {
+    "token": "3feb3291e3f39fc735717429",
+    "groupId": "21028730fcd171eafdb10ff5b6941996",
+    "inviter": "0x313aE8a555d16F2D653440EF19212e9A342Acd0B",
+    "expiresAt": 1761384100253,
+    "used": false,
+    "nonce": null,
+    "lastUsedAt": null
+  },
+  {
+    "token": "e4f4034765a7bfa86e69aaf4",
+    "groupId": "21028730fcd171eafdb10ff5b6941996",
+    "inviter": "0x313aE8a555d16F2D653440EF19212e9A342Acd0B",
+    "expiresAt": 1761384287337,
+    "used": false,
+    "nonce": null,
+    "lastUsedAt": null
+  },
+  {
+    "token": "780dadacfaf2cc78f3e43970",
+    "groupId": "21028730fcd171eafdb10ff5b6941996",
+    "inviter": "0x313aE8a555d16F2D653440EF19212e9A342Acd0B",
+    "expiresAt": 1761384307168,
+    "used": false,
+    "nonce": null,
+    "lastUsedAt": null
+  }
+]
