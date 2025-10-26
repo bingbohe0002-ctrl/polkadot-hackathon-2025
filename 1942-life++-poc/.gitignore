@@ -5,10 +5,16 @@
 # Environment files (包含私钥，绝对不能提交)
 .env
 .env.local
-.env.passetHub
 .env.testnet
 .env.developer
 .env.*.local
+
+# 注意：.env.passetHub 已从忽略列表移除，可以安全提交
+# 该文件包含：
+# - 测试网配置（安全）
+# - 合约地址（公开）
+# - DEPLOYER_PRIVATE_KEY（Hardhat默认测试私钥，公开可用）
+# - PRIVATE_KEY占位符（需要评委配置自己的测试钱包）
 
 # Node modules
 node_modules/

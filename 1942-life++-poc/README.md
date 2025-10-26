@@ -65,6 +65,7 @@ Life++ PoC 是一个基于 Polkadot REVM 的**认知证明系统**，为 AI 代�
 - **跨链支持**: 利用 Polkadot 生态的跨链能力
 - **可扩展性**: 模块化设计，支持多种验证算法
 - **安全性**: 多重验证机制，确保认知证明的真实性
+- **去中心化验证**: 支持多验证者共识机制（生产环境需3个验证者，测试环境可动态调整）
 
 ### 4) 应用场景
 - **AI 代理验证**: 为 AI 系统提供可验证的认知过程证明
@@ -170,6 +171,10 @@ Life++ PoC 是一个基于 Polkadot REVM 的**认知证明系统**，为 AI 代�
   - 因果一致性评分
   - 意图匹配度
   - 对抗鲁棒性测试结果
+- **共识机制**:
+  - 生产环境：需要3个独立验证者达成共识（防止单点作恶）
+  - 测试环境：验证阈值可动态调整为1（便于评委快速测试）
+  - 合约提供 `setRequiredAttestations()` 函数实现灵活的治理机制
 
 #### 6️⃣ **结果生成阶段**
 - **输入**: 验证通过的证明
@@ -219,40 +224,46 @@ cd polk-contract
 npm install
 ```
 
-### 3. 配置环境
+### 3. 环境配置
 
-#### 3.1 环境变量配置
+#### 3.1 复制环境配置文件
 ```bash
-# 方式A：一键生成开发者环境
-node scripts/create-developer-env.js
-
-# 方式B：直接使用已配置的环境文件
-# .env.passetHub 文件已包含所有必要配置
+# 复制环境配置文件（包含所有必要配置，但不包含私钥）
+cp .env.passetHub .env
 ```
 
-#### 3.2 加载环境变量
-**重要**: 由于项目使用 `.env.passetHub` 文件存储配置，需要手动加载环境变量：
+#### 3.2 配置钱包私钥
+**重要**: 评委需要配置自己的测试钱包：
 
 ```bash
-# 加载环境变量（每次运行测试前都需要执行）
-source .env.passetHub
+# 编辑环境文件
+nano .env
+# 或者使用其他编辑器：vim .env, code .env, notepad .env 等
+# macOS/Linux: nano, vim, code
+# Windows: notepad, code
 
-# 验证环境变量加载成功
-echo "私钥: $PRIVATE_KEY"
-echo "合约地址: $CATK_ADDRESS"
-echo "部署者地址: $DEPLOYER_ADDRESS"
+# 在.env文件中找到以下行并替换为你的测试钱包私钥：
+PRIVATE_KEY=0x你的测试钱包私钥
 ```
 
-**注意**: 
-- 每次运行测试前都需要执行 `source .env.passetHub`
-- 确保你的钱包私钥已正确配置在 `.env.passetHub` 文件中
-- 私钥格式必须是 EVM 格式，不是 Substrate 格式
+**配置说明**：
+- ✅ **PRIVATE_KEY**: 评委需要配置自己的测试钱包私钥
+- ✅ **DEPLOYER_PRIVATE_KEY**: 已预配置，无需修改（用于自动转账CATK）
+- ✅ **地址自动推导**: 钱包地址会自动从私钥推导，无需手动配置
+- ✅ **所需代币**: 评委钱包只需要测试网ETH（用于Gas费），CATK会自动转账
 
-### 4. 合约部署（可选）
+**安全提醒**：
+- ⚠️ **请使用测试钱包**，不要使用主钱包或有真实资产的钱包
+- ⚠️ **DEPLOYER_PRIVATE_KEY** 是Hardhat默认测试私钥（公开可用，仅用于测试网）
+- ⚠️ 测试完成后可以删除测试钱包
+- ✅ 测试网ETH可以通过水龙头免费获取
+
+
+### 3.3 合约部署（可选）
 
 > **📝 说明**: 合约已在 PassetHub 测试网部署完成，无需重新部署。若执行部署脚本，不影响业务运行，程序会自动更新合约地址。
 
-#### 4.1 部署智能合约（可选）
+#### 3.3.1 部署智能合约（可选）
 ```bash
 # 部署智能合约到 PassetHub 测试网
 npm run deploy:passethub
@@ -261,53 +272,29 @@ npm run deploy:passethub
 npm run show:deployment-data
 ```
 
-### 5. 测试验证流程
+### 4. 测试环境启动（一步完成）
 
-#### 5.1 加载环境变量
 ```bash
-# 重要：每次运行测试前都需要加载环境变量
-source .env.passetHub
-
-# 验证环境变量加载成功
-echo "私钥: $PRIVATE_KEY"
-echo "合约地址: $CATK_ADDRESS"
+# 一键启动测试环境（包含：环境检查、网络验证、钱包验证、功能测试、服务启动）
+npm run start:test
 ```
 
-#### 5.2 测试前数据记录
-```bash
-# 记录当前部署状态和合约地址
-npm run show:deployment-data
+**前提条件**：确保已完成第3步的环境配置
 
-# 检查钱包余额和网络状态
-npm run check:network-status
-```
+**启动流程包含**：
+- ✅ **环境配置检查** - 私钥格式、网络连接、钱包余额
+- ✅ **智能合约功能测试** - CATK、Registry、Ledger、NFT、Legal Wrapper
+- ✅ **服务层功能测试** - Validator Daemon、AHIN Indexer
+- ✅ **API 接口测试** - 健康检查、认知事件提交
+- ✅ **端到端流程测试** - 合约部署、网络连接、钱包状态
+- ✅ **测试数据记录** - 测试前后数据对比
+- ✅ **服务启动指导** - AHIN Indexer + Validator Daemon
 
-#### 5.3 运行功能测试
-```bash
-# 运行完整的评审测试
-npm run hackathon:test
-
-# 运行 PassetHub 专项测试
-npm run test:passethub
-```
-
-#### 5.4 测试后数据分析
-```bash
-# 分析测试结果和数据变化
-npm run analyze:test-results
-
-# 显示测试产生的数据变化
-npm run show:deployment-data
-```
-
-### 6. 启动服务
-```bash
-# 启动 AHIN Indexer
-npm run indexer:start
-
-# 启动 Validator Daemon
-npm run validator:start
-```
+**启动完成后**：
+- 🌐 **AHIN Indexer**: http://localhost:3000 (认知事件索引服务)
+- 🔧 **Validator Daemon**: 后台运行 (证明验证服务)
+- 📊 **查看测试结果**: `npm run show:deployment-data`
+- 🧪 **测试覆盖**: 智能合约 + 服务层 + API + 端到端流程
 
 ## 📋 已部署合约地址
 
@@ -320,28 +307,60 @@ npm run validator:start
 
 ## 🧪 测试验证
 
-### 评审测试脚本
+### 评审测试（一步完成）
 
-#### 重要：钱包配置验证
-**评审使用自己的钱包就可以成功调用** - 这是黑客松的核心要求！
+**前提条件**：确保已完成第3步的环境配置
 
 ```bash
-# 1. 加载你的钱包环境变量
-source .env.passetHub
+# 一键运行评审测试（包含所有验证流程）
+npm run start:test
+```
 
-# 2. 验证你的钱包已加载
-echo "你的私钥: $PRIVATE_KEY"
-echo "你的地址: $DEPLOYER_ADDRESS"
+**完整功能测试包含**：
+- ✅ **环境配置验证** - 私钥格式、网络连接、钱包余额
+- ✅ **智能合约功能测试** - CATK、Registry、Ledger、NFT、Legal Wrapper
+- ✅ **自动CATK转账** - 部署者钱包自动转账CATK给评委
+- ✅ **自动证明验证** - 部署者钱包自动验证认知证明
+- ✅ **自动NFT发放** - 验证通过后自动铸造并发放NFT证书
+- ✅ **服务层功能测试** - Validator Daemon、AHIN Indexer
+- ✅ **API 接口测试** - 健康检查、认知事件提交
+- ✅ **端到端流程测试** - 合约部署、网络连接、钱包状态
+- ✅ **真实交易验证** - 区块链交易、钱包余额变化
+- ✅ **服务启动验证** - 服务状态检查、启动指导
 
-# 3. 运行评审测试（使用你的钱包）
-npm run hackathon:test
+**📋 关于验证者机制的说明**：
+```
+生产环境：需要 3 个独立验证者达成共识（去中心化验证）
+测试环境：临时降低为 1 个验证者（便于评委快速测试）
+
+这种动态调整验证阈值的能力本身就是合约的重要治理特性！
+合约通过 setRequiredAttestations() 函数支持灵活的共识机制配置。
 ```
 
 #### 验证钱包参与测试
-测试完成后，你应该能看到：
-- ✅ **你的钱包余额变化** - 消耗了 Gas 费用
-- ✅ **你的钱包参与了交易** - 在区块浏览器中可见
-- ✅ **你的钱包获得了代币** - CATK 代币余额变化
+测试完成后，你应该能看到评委钱包的以下变化：
+
+**1. ETH余额变化** ⛽
+- 测试前：例如 100 ETH
+- 测试后：例如 99.95 ETH
+- 变化：约消耗 0.05 ETH 作为Gas费
+
+**2. CATK代币获得** 💰
+- 测试前：0 CATK
+- 测试后：约 10 CATK
+- 说明：从部署者钱包收到110 CATK，其中100 CATK质押到Registry
+
+**3. NFT证书获得** 🎫
+- 测试前：0 个 aNFT
+- 测试后：1 个 Action Proof NFT
+- 说明：测试脚本自动验证证明并发放NFT证书
+- 流程：提交证明 → 自动验证 → 自动铸造NFT → 发放给评委
+
+**4. 链上交易记录** 📝
+- Agent注册交易
+- 认知证明提交交易
+- 代币转账交易
+- 所有交易可在区块浏览器中查看
 
 #### 添加CATK代币到钱包
 **重要**: 测试完成后，您需要在钱包中手动添加CATK代币才能看到余额：

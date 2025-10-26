@@ -24,7 +24,8 @@
     "check:network-status": "hardhat run scripts/check-network-status.js --network passetHub",
     "analyze:test-results": "node scripts/analyze-test-results.js",
     "dev:setup": "node scripts/create-developer-env.js",
-    "dev:derive": "node scripts/final-key-derivation.js"
+    "dev:derive": "node scripts/final-key-derivation.js",
+    "start:test": "hardhat run scripts/start-test-environment.js --network passetHub"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0",

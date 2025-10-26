@@ -2,7 +2,7 @@
 // hardhat.config.js
 // ============================================================================
 require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config({ path: '.env.passetHub' });
+require("dotenv").config();
 
 module.exports = {
   solidity: {

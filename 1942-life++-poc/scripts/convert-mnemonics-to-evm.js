@@ -60,10 +60,8 @@ async function main() {
   console.log(`VALIDATOR_PRIVATE_KEY=${evmData.validator?.privateKey || '请填入Validator的EVM私钥'}`);
   console.log(`AGENT_PRIVATE_KEY=${evmData.agent?.privateKey || '请填入Agent的EVM私钥'}`);
   console.log(``);
-  console.log(`# 更新对应的 EVM 地址`);
-  console.log(`DEPLOYER_ADDRESS=${evmData.deployer?.address || '请填入Deployer的EVM地址'}`);
-  console.log(`AGENT_ADDRESS=${evmData.agent?.address || '请填入Agent的EVM地址'}`);
-  console.log(`VALIDATOR_ADDRESS=${evmData.validator?.address || '请填入Validator的EVM地址'}`);
+  console.log(`# 注意：地址会自动从私钥推导，无需手动配置`);
+  console.log(`# 例如：PRIVATE_KEY=0x1234... 会自动对应地址 ${evmData.deployer?.address || '0x...'}`);
   
   console.log("\n" + "=".repeat(50));
   console.log("🎯 下一步操作:");

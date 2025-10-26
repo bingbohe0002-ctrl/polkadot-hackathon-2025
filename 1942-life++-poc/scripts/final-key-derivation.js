@@ -12,7 +12,6 @@ async function finalKeyDerivation() {
 
   // 从环境变量读取助记词
   const mnemonics = {
-    deployer: process.env.DEPLOYER_MNEMONIC,
     agent: process.env.AGENT_MNEMONIC, 
     validator: process.env.VALIDATOR_MNEMONIC
   };
@@ -64,7 +63,7 @@ PASSETHUB_RPC=https://testnet-passet-hub-eth-rpc.polkadot.io
 RPC_URL=https://testnet-passet-hub-eth-rpc.polkadot.io
 
 # Private Keys (derived from Substrate mnemonic phrases)
-PRIVATE_KEY=${derivedKeys.deployer?.privateKey || 'your-deployer-private-key-here'}
+PRIVATE_KEY=your-main-private-key-here
 VALIDATOR_PRIVATE_KEY=${derivedKeys.validator?.privateKey || 'your-validator-private-key-here'}
 AGENT_PRIVATE_KEY=${derivedKeys.agent?.privateKey || 'your-agent-private-key-here'}
 
@@ -91,10 +90,8 @@ GAS_PRICE=auto
 HACKATHON_TRACK=track1
 PROJECT_NAME=lifeplusplus-poc
 
-# Account Addresses (for reference)
-DEPLOYER_ADDRESS=${derivedKeys.deployer?.address || '5EEe7y4NAUnAnnbQApDBnBuaFeEvuFDe9EexmwXqwdNZjGnA'}
-AGENT_ADDRESS=${derivedKeys.agent?.address || '5G4mF1uQ3R4Sf12XwH5Bu7frQUgAkKwPmyGxMrzAFWu7MYCb'}
-VALIDATOR_ADDRESS=${derivedKeys.validator?.address || '5CvkxaxqUEeS56o6uWXSomMqQ1dwi55oLoDW9VSz1dnQcuaP'}
+# Note: Addresses are automatically derived from private keys
+# No need to configure addresses manually
 `;
 
   const fs = require('fs');

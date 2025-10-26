@@ -160,13 +160,24 @@ async function main() {
         console.log(`   Available: ${hre.ethers.formatEther(testerBalance)} CATK`);
         
         // 自动转账CATK给测试者
-        console.log(`🔄 自动转账CATK给测试者...`);
+        console.log(`🔄 自动转账CATK给评委钱包...`);
         try {
           const transferAmount = stakeAmount + hre.ethers.parseEther("10"); // 转账110 CATK，确保有足够余额
           
-          // 使用部署者账户来执行转账
+          // 检查DEPLOYER_PRIVATE_KEY配置
+          if (!process.env.DEPLOYER_PRIVATE_KEY) {
+            throw new Error("❌ 未配置DEPLOYER_PRIVATE_KEY！这是用于给评委转账CATK的钱包");
+          }
+          
+          // 使用部署者钱包来执行转账（部署者拥有CATK代币）
+          console.log(`💡 使用部署者钱包 (拥有CATK) 给评委钱包转账`);
           const deployerWallet = new hre.ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, hre.ethers.provider);
           const deployerCATK = await hre.ethers.getContractAt('CognitiveAssetToken', deployment.contracts.CATK, deployerWallet);
+          
+          console.log(`   从: ${deployerWallet.address} (部署者)`);
+          console.log(`   到: ${tester.address} (评委)`);
+          console.log(`   金额: ${hre.ethers.formatEther(transferAmount)} CATK`);
+          
           const transferTx = await deployerCATK.transfer(tester.address, transferAmount);
           console.log(`📝 执行CATK转账交易...`);
           const transferReceipt = await transferTx.wait();
@@ -297,6 +308,76 @@ async function main() {
         console.log(`   Timestamp: ${proof.timestamp}`);
         console.log(`   Attested By: ${proof.attestedBy.length} validators`);
         console.log(`   Chain Rank: ${proof.chainRank}`);
+        
+        // 🆕 自动验证证明并发放NFT
+        if (Number(proof.status) === 0) {
+          console.log(`\n🔄 自动验证证明并发放NFT...`);
+          try {
+            // 检查DEPLOYER_PRIVATE_KEY（部署者拥有VALIDATOR_ROLE）
+            if (!process.env.DEPLOYER_PRIVATE_KEY) {
+              throw new Error("❌ 未配置DEPLOYER_PRIVATE_KEY！无法验证证明");
+            }
+            
+            // 检查当前所需验证数量
+            const requiredAttestations = await ledger.requiredAttestations();
+            console.log(`💡 需要 ${requiredAttestations} 个验证者验证才能发放NFT`);
+            console.log(`💡 当前验证者数量: ${proof.attestedBy.length}`);
+            
+            // 方案1：如果是管理员，临时降低阈值（推荐）
+            console.log(`\n📝 步骤1：临时降低验证阈值为1（便于评委测试）`);
+            const validatorWallet = new hre.ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, hre.ethers.provider);
+            const validatorLedger = await hre.ethers.getContractAt('PoCLedger', deployment.contracts.Ledger, validatorWallet);
+            
+            const setThresholdTx = await validatorLedger.setRequiredAttestations(1);
+            await setThresholdTx.wait();
+            console.log(`✅ 验证阈值已设置为1`);
+            
+            // 方案2：使用部署者钱包验证证明
+            console.log(`\n📝 步骤2：验证证明`);
+            const attestTx = await validatorLedger.attestProof(proofId, true);
+            console.log(`📝 执行证明验证交易...`);
+            const attestReceipt = await attestTx.wait();
+            
+            if (attestReceipt.status === 1) {
+              console.log(`✅ 证明验证成功！交易哈希: ${attestReceipt.transactionHash}`);
+              console.log(`   Gas 消耗: ${attestReceipt.gasUsed.toString()} Gas`);
+              
+              // 重新查询证明状态
+              const updatedProof = await ledger.getProof(proofId);
+              console.log(`✅ 证明状态已更新: ${updatedProof.status} (1=Verified, NFT已铸造)`);
+              
+              // 检查NFT是否已发放
+              const ANFT = await hre.ethers.getContractFactory("ActionProofNFT");
+              const aNFT = ANFT.attach(deployment.contracts.aNFT);
+              const nftBalance = await aNFT.balanceOf(tester.address);
+              console.log(`✅ 评委钱包NFT余额: ${nftBalance.toString()} 个`);
+              
+              if (nftBalance > 0) {
+                console.log(`🎉 NFT证书已成功发放给评委钱包！`);
+                console.log(`   总共获得 ${nftBalance} 个NFT证书`);
+              }
+              
+              // 恢复阈值为3
+              console.log(`\n📝 步骤3：恢复验证阈值为3`);
+              const restoreTx = await validatorLedger.setRequiredAttestations(3);
+              await restoreTx.wait();
+              console.log(`✅ 验证阈值已恢复为3`);
+            } else {
+              console.log(`⚠️ 证明验证交易失败`);
+            }
+          } catch (attestError) {
+            console.log(`⚠️ 自动验证失败: ${attestError.message}`);
+            console.log(`💡 证明已提交，可以稍后手动验证或启动Validator Daemon`);
+          }
+        } else if (Number(proof.status) === 1) {
+          console.log(`✅ 证明已被验证，NFT应该已发放`);
+          
+          // 检查NFT是否已发放
+          const ANFT = await hre.ethers.getContractFactory("ActionProofNFT");
+          const aNFT = ANFT.attach(deployment.contracts.aNFT);
+          const nftBalance = await aNFT.balanceOf(tester.address);
+          console.log(`✅ 评委钱包NFT余额: ${nftBalance.toString()} 个`);
+        }
       }
     }
     

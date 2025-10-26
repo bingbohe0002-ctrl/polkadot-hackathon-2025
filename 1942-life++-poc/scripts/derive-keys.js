@@ -93,10 +93,8 @@ GAS_PRICE=auto
 HACKATHON_TRACK=track1
 PROJECT_NAME=lifeplusplus-poc
 
-# Account Addresses (for reference)
-DEPLOYER_ADDRESS=${derivedKeys.deployer?.address || '5EEe7y4NAUnAnnbQApDBnBuaFeEvuFDe9EexmwXqwdNZjGnA'}
-AGENT_ADDRESS=${derivedKeys.agent?.address || '5G4mF1uQ3R4Sf12XwH5Bu7frQUgAkKwPmyGxMrzAFWu7MYCb'}
-VALIDATOR_ADDRESS=${derivedKeys.validator?.address || '5CvkxaxqUEeS56o6uWXSomMqQ1dwi55oLoDW9VSz1dnQcuaP'}
+# Note: Addresses are automatically derived from private keys
+# No need to configure addresses manually
 `;
 
   // 保存到文件
