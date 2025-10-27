@@ -1,0 +1,22 @@
+{
+  "network": "passetHub",
+  "timestamp": "2025-10-19T08:27:47.413Z",
+  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "contracts": {
+    "CATK": "0x2e8880cAdC08E9B438c6052F5ce3869FBd6cE513",
+    "aNFT": "0xb007167714e2940013EC3bb551584130B7497E22",
+    "Registry": "0x6b39b761b1b64C8C095BF0e3Bb0c6a74705b4788",
+    "Ledger": "0xeC827421505972a2AE9C320302d3573B42363C26",
+    "LegalWrapper": "0x74Df809b1dfC099E8cdBc98f6a8D1F5c2C3f66f8"
+  },
+  "explorer": {
+    "baseUrl": "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.polkadot.io#/explorer",
+    "contracts": {
+      "CATK": "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.polkadot.io#/explorer/query/0x2e8880cAdC08E9B438c6052F5ce3869FBd6cE513",
+      "aNFT": "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.polkadot.io#/explorer/query/0xb007167714e2940013EC3bb551584130B7497E22",
+      "Registry": "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.polkadot.io#/explorer/query/0x6b39b761b1b64C8C095BF0e3Bb0c6a74705b4788",
+      "Ledger": "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.polkadot.io#/explorer/query/0xeC827421505972a2AE9C320302d3573B42363C26",
+      "LegalWrapper": "https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.polkadot.io#/explorer/query/0x74Df809b1dfC099E8cdBc98f6a8D1F5c2C3f66f8"
+    }
+  }
+}
