@@ -37,6 +37,8 @@ describe('useRelayerHealth', () => {
   afterEach(() => {
     jest.useRealTimers()
     jest.resetAllMocks()
+    // @ts-expect-error cleanup in test env
+    delete global.fetch
   })
 
   it('fetches health immediately and on interval', async () => {

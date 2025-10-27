@@ -56,10 +56,13 @@ See [`mvp-architecture.md`](mvp-architecture.md) for detailed data flow diagrams
    cp .env.example .env   # fill RPC URL, private key, addresses
    npm run start
    ```
-   The relayer listens for `GameRecorded` events and mints WBOO for victorious players.
+   The relayer listens for `GameRecorded` events, persists processed logs to `.cache/processed-events.jsonl`, and mints WBOO for victorious players. The frontend navbar now shows pending/success banners so judges can see rewards landing in real time. Run `npm run status` inside `packages/relayer` to print a JSON health snapshot (queue depth, last mint, processed cache size) or hit `http://localhost:8787/healthz` (frontend defaults to `/healthz` when the env var is omitted).
 6. **Testing scripts**
    - Contracts: `packages/contracts/npm run test`.
-   - Targeted frontend tests: `react-wordle/npm test -- --watch=false --testPathPattern="(shop|contracts|words)"`.
+   - Contracts (coverage/gas): `packages/contracts/npm run coverage` and `npm run gas` (set `REPORT_GAS=true`).
+   - Targeted frontend tests: `react-wordle/npm test -- --watch=false --testPathPattern="(shop|contracts|words|RelayerStatusBanner|useRelayerNotifications)"`.
+   - Relayer: `packages/relayer/npm test`.
+   - Relayer health snapshot: `packages/relayer/npm run status` (or `curl http://localhost:8787/healthz`).
 
 > **Note:** Legacy CRA tests referencing ZK worker code still require a jest upgrade; they are excluded from judging instructions.
 
@@ -108,6 +111,7 @@ Optional extras (stretch goals):
 - [`demo-playbook.md`](demo-playbook.md): live presentation script.
 - [`roadmap-next.md`](roadmap-next.md): post-hackathon backlog.
 - [`handoff.md`](handoff.md): current gaps and guidance for future contributors.
+- [`testing-matrix.md`](testing-matrix.md): commands, coverage targets, and CI TODOs.
 - [`Migrating Ethereum DApps to Polkadot – Technical Roadmap & Strategy.pdf`](Migrating%20Ethereum%20DApps%20to%20Polkadot%20–%20Technical%20Roadmap%20%26%20Strategy.pdf): background research.
 
 ---
@@ -122,3 +126,8 @@ Optional extras (stretch goals):
 ---
 
 Ready to jam on Polkadot 🌐🔤🟩? Ping the maintainers or open a GitHub issue if you need help reproducing results during judging.
+
+
+
+
+

@@ -26,18 +26,18 @@
 - [x] Prepare demo walkthrough script.
 
 ## Milestone 4 – Relayer Reliability (Day 4)
-- [ ] Persist processed `GameRecorded` identifiers across restarts to avoid double minting.
-- [ ] Add configurable retry/backoff strategy for failed mint transactions.
-- [ ] Extend relayer unit tests to cover persistence and failure recovery (TDD).
-- [ ] Update deployment guide with relayer storage/operations notes.
+- [x] Persist processed `GameRecorded` identifiers across restarts to avoid double minting.
+- [x] Add configurable retry/backoff strategy for failed mint transactions.
+- [x] Extend relayer unit tests to cover persistence and failure recovery (TDD).
+- [x] Update deployment guide with relayer storage/operations notes.
 
 ## Milestone 5 – Player Feedback & Monitoring (Day 5)
-- [ ] Surface relayer success/failure notifications in the React UI (e.g., navbar toast/log).
-- [ ] Cover the new UX with React Testing Library specs guarding hooks/components.
-- [ ] Add lightweight telemetry hooks (console or log aggregation stub) for hackathon demos.
+- [x] Surface relayer success/failure notifications in the React UI (e.g., navbar toast/log).
+- [x] Cover the new UX with React Testing Library specs guarding hooks/components.
+- [x] Add lightweight telemetry hooks (structured logger + `npm run status` snapshot) for hackathon demos.
 
 ## Milestone 6 – Quality Gates (Day 5–6)
-- [ ] Capture contract gas snapshot + coverage report (`forge coverage`, `npx hardhat coverage`).
+- [x] Capture contract gas snapshot + coverage report (`forge coverage`, `npx hardhat coverage`).
 - [ ] Wire relayer tests into CI (vitest) and document command in README.
 - [ ] Audit frontend test commands, modernise Jest/Vitest config once CRA migration begins.
 

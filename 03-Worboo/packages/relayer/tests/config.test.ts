@@ -41,6 +41,9 @@ describe('loadConfig', () => {
     expect(config.healthPath).toBeUndefined();
     expect(config.healthPort).toBe(8787);
     expect(config.healthHost).toBe('0.0.0.0');
+    expect(config.logFilePath).toBeUndefined();
+    expect(config.logMaxBytes).toBe(5 * 1024 * 1024);
+    expect(config.logBackupCount).toBe(5);
   });
 
   it('honours custom reward amounts', () => {
@@ -65,6 +68,9 @@ describe('loadConfig', () => {
     process.env.RELAYER_HEALTH_PATH = '/tmp/health.json';
     process.env.RELAYER_HEALTH_PORT = '9999';
     process.env.RELAYER_HEALTH_HOST = '127.0.0.1';
+    process.env.RELAYER_LOG_FILE = '/var/log/worboo.jsonl';
+    process.env.RELAYER_LOG_MAX_BYTES = '1048576';
+    process.env.RELAYER_LOG_BACKUPS = '7';
 
     const config = loadConfig();
     expect(config.maxRetries).toBe(5);
@@ -73,5 +79,8 @@ describe('loadConfig', () => {
     expect(config.healthPath).toBe('/tmp/health.json');
     expect(config.healthPort).toBe(9999);
     expect(config.healthHost).toBe('127.0.0.1');
+    expect(config.logFilePath).toBe('/var/log/worboo.jsonl');
+    expect(config.logMaxBytes).toBe(1_048_576);
+    expect(config.logBackupCount).toBe(7);
   });
 });

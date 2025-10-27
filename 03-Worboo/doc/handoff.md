@@ -9,7 +9,7 @@
 
 ## Gaps Before “Full Flow” Demo
 
-1. **Relayer feedback in UI** – currently console-only; consider adding toasts or a status indicator so users know rewards were minted.
+1. **Relayer observability** – navbar banner surfaces mint success/pending states and the `npm run status` snapshot provides queue depth, but we still need richer metrics (continuous heartbeat, historical trend) for ops dashboards.
 2. **No persistence/indexing** – inventory relies on real-time contract reads. A Subsquid/SubQuery indexer would enable leaderboards and history.
 3. **ZK proof integration** – the original Halo2 pipeline is still offline; bringing it back with IPFS + on-chain attestation is a v2 goal.
 4. **Security hardening** – contract roles are minimal; add timelocks or multisig before production deployment.
@@ -17,7 +17,7 @@
 
 ## Focus for Next Contributors
 
-- **Short term**: land relayer persistence (disk cache for processed events), add retry/backoff and tests, then surface mint status cues in the React navbar.
+- **Short term**: wire the new `/healthz` endpoint into external dashboards (Grafana/Prometheus), add log rotation/retention, and document recovery workflows around the persisted cache.
 - **Medium term**: build the reward relayer into a proper service (Dockerfile, PM2/forever scripts), integrate telemetry, and wire an indexer for leaderboards.
 - **Long term**: merge ZK proof validation, experiment with PVM/ink! contracts, and design governance/economics for community seasons.
 

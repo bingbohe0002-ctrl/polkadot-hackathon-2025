@@ -1,3 +1,6 @@
+import { mkdtempSync, readFileSync, rmSync } from 'fs'
+import { join, resolve } from 'path'
+import { tmpdir } from 'os'
 import { describe, expect, it, vi } from 'vitest'
 
 import { createLogger } from '../src/logger'
@@ -36,5 +39,29 @@ describe('createLogger', () => {
     const errorRecord = JSON.parse(errorWriter.mock.calls[1][0])
     expect(warnRecord.level).toBe('warn')
     expect(errorRecord.level).toBe('error')
+  })
+
+  it('writes to file and rotates when exceeding size', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'worboo-logger-'))
+    const filePath = resolve(dir, 'relayer.log')
+    const logger = createLogger({
+      filePath,
+      maxBytes: 256,
+      backups: 1,
+      infoWriter: () => undefined,
+      errorWriter: () => undefined,
+    })
+
+    for (let index = 0; index < 20; index += 1) {
+      logger.info('message', { index })
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 50))
+
+    const contents = readFileSync(filePath, 'utf-8').trim().split('\n')
+    expect(contents.length).toBeGreaterThan(0)
+    expect(readFileSync(`${filePath}.1`, 'utf-8').length).toBeGreaterThan(0)
+
+    rmSync(dir, { recursive: true, force: true })
   })
 })

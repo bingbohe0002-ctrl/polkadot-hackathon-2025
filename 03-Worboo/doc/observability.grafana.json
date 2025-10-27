@@ -1,0 +1,22 @@
+{
+  "panels": [
+    {
+      "title": "Relayer Queue Depth",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "worboo_relayer_queue_depth"
+        }
+      ]
+    },
+    {
+      "title": "Relayer Last Mint Age",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "(time() * 1000 - worboo_relayer_last_mint_at) / 1000"
+        }
+      ]
+    }
+  ]
+}

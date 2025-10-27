@@ -25,7 +25,12 @@ async function main() {
   const provider = new JsonRpcProvider(cfg.rpcUrl)
   const wallet = new Wallet(cfg.privateKey, provider)
 
-  const logger = createLogger({ context: { component: 'worboo-relayer' } })
+  const logger = createLogger({
+    context: { component: 'worboo-relayer' },
+    filePath: cfg.logFilePath,
+    maxBytes: cfg.logMaxBytes,
+    backups: cfg.logBackupCount,
+  })
 
   const registry = new Contract(
     cfg.registryAddress,

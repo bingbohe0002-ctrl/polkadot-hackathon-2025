@@ -99,6 +99,7 @@ REACT_APP_WORBOO_SHOP=0x...
    REACT_APP_WORBOO_REGISTRY=0x...
    REACT_APP_WORBOO_TOKEN=0x...
    REACT_APP_WORBOO_SHOP=0x...
+   REACT_APP_RELAYER_HEALTH_URL=http://localhost:8787/healthz
    ```
 3. Start the app:
    ```bash
@@ -138,6 +139,15 @@ Confirm the transaction in block explorers such as https://moonbase.moonscan.io/
    RELAYER_REGISTRY_ADDRESS=0x...
    RELAYER_TOKEN_ADDRESS=0x...
    RELAYER_REWARD_PER_WIN=10                    # optional, defaults to 10 WBOO
+   RELAYER_MAX_RETRIES=3                        # optional, defaults to 3 attempts
+   RELAYER_BACKOFF_MS=1000                      # optional, base backoff in ms
+   RELAYER_CACHE_PATH=.cache/processed-events.jsonl    # optional override
+   RELAYER_HEALTH_PATH=.cache/health.json              # optional, used by npm run status
+   RELAYER_HEALTH_HOST=0.0.0.0                         # optional, HTTP bind host
+   RELAYER_HEALTH_PORT=8787
+RELAYER_LOG_FILE=.logs/worboo-relayer.log
+RELAYER_LOG_MAX_BYTES=5242880
+RELAYER_LOG_BACKUPS=5                            # optional, defaults to 8787
    ```
 3. Start the relayer:
    ```bash
@@ -151,9 +161,23 @@ Confirm the transaction in block explorers such as https://moonbase.moonscan.io/
     - token:    0x...
     - reward:   10000000000000000000 wei
     - operator: 0xRELAYER...
+    - retries:  3 (backoff 1000ms)
+   - cache:    <repo>/.cache/processed-events.jsonl
    ```
 
 When a game win occurs (via `recordGame`), the relayer mints `rewardPerWin` WBOO to the victorious player.
+
+> Processed events are persisted to `.cache/processed-events.jsonl` by default so relayer restarts will not double-mint. Delete the file if you intentionally need to re-run historical events.
+
+Check service health at any time:
+
+```bash
+npm run status
+```
+
+This prints a JSON snapshot (queue depth, last mint timestamp, processed cache size) using the persisted health file.
+
+The same payload is available over HTTP at `http://localhost:8787/healthz` (adjust host/port via env). Point `REACT_APP_RELAYER_HEALTH_URL` to this endpoint so the navbar can show live queue depth or surface health errors. JSONL logs are written to `.logs/worboo-relayer.log` when `RELAYER_LOG_FILE` is set; rotate/ship them to your logging backend of choice. See [doc/observability.md](observability.md) for Grafana/Prometheus notes.
 
 ---
 
@@ -161,6 +185,7 @@ When a game win occurs (via `recordGame`), the relayer mints `rewardPerWin` WBOO
 
 - Connect the same wallet in the UI.
 - After registering and winning a puzzle, refresh the shop modal—balance should update once the relayer transaction confirms.
+- The navbar now surfaces relayer status: pending wins trigger a banner, and successful mints show `Relayer minted +X WBOO` once the relayer processes the event.
 - For manual mint testing, call `mintTo` via Hardhat console:
   ```bash
   npx hardhat console --network moonbase
@@ -176,8 +201,10 @@ When a game win occurs (via `recordGame`), the relayer mints `rewardPerWin` WBOO
 | Layer | Command |
 | --- | --- |
 | Contracts | `npm run test` (inside `packages/contracts`) |
+| Contracts – coverage | `REPORT_GAS=false npm run coverage` |
+| Contracts – gas report | `REPORT_GAS=true npm run gas` |
 | Relayer config | `npm run test` (inside `packages/relayer`) |
-| Frontend targeted suite | `npm test -- --watch=false --testPathPattern="(shop|contracts|words)"` |
+| Frontend targeted suite | `npm test -- --watch=false --testPathPattern="(shop|contracts|words|RelayerStatusBanner|useRelayerNotifications)"` |
 
 ---
 

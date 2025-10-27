@@ -2,6 +2,8 @@
 
 Prepared before implementation to keep the TDD cadence intact and document the intended behaviour for Milestones 4–5.
 
+_Status update (2025-10-27): persistence, retry/backoff, and navbar banner are live; telemetry/logging polish remains in Milestone 5._
+
 ---
 
 ## 1. Objectives
@@ -87,3 +89,30 @@ Tests come first; production code implements the minimum to satisfy them.
 - **Timer drift**: rely on real-time under 1 min; tests will use fake timers to guarantee determinism.
 
 Ready for implementation once stakeholders approve the above plan.
+
+---
+
+## 6. Next Telemetry Increment (Milestone 5 extension)
+
+### Goals
+- Expose *relayer heartbeat* and *queue depth* so operators can see liveness without tailing raw logs.
+- Provide both a CLI endpoint (`npm run status`) and an HTTP endpoint (`/healthz`) that report `status`, `lastEventAt`, `pendingRewards`, and `processedCacheSize`.
+- Emit structured log lines (`relayer.event`, `relayer.health`) to simplify parsing in external log tools.
+- Surface queue depth / heartbeat in the React navbar (e.g., "Relayer idle" vs "Relayer processing 2 wins").
+
+_Status update (2025-10-27): `/healthz`, CLI snapshot, structured logs, and navbar integration are live; next focus on external dashboards and long-term metrics retention._
+
+### Testing Strategy
+1. `status.test.ts` — unit tests for the `collectHealthSnapshot` helper (existing coverage), plus HTTP server tests that hit `/healthz` and verify payload/headers.
+2. `logger.test.ts` — ensure structured logger formats (`JSON.parse(line)`) contain mandatory keys.
+3. Extend `handler.test.ts` to assert successful mints update the heartbeat timestamp and queue depth counter used by the new status command.
+4. `useRelayerHealth.test.tsx` — React hook test mocking `fetch` to ensure the navbar renders queue depth + last heartbeat.
+
+Implementation sequence follows TDD:
+1. Author failing tests for the snapshot helper, HTTP server, and React hook.
+2. Implement helpers (`src/health.ts`, `src/logger.ts`), wire into relayer entrypoint, and stand up the HTTP server (configurable port).
+3. Add bin script `npm run status` that invokes `collectHealthSnapshot` and prints JSON (done).
+4. Build `useRelayerHealth` hook + navbar wiring, satisfy React tests.
+5. Update docs with operational instructions (CLI, HTTP, UI indicators).
+
+Open question: persist heartbeat metadata to the cache file or keep in-memory with optional rehydration. Default path will be in-memory; if we need persistence we can append a heartbeat JSONL entry (stretch goal).
