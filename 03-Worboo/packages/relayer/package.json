@@ -5,7 +5,8 @@
   "scripts": {
     "start": "ts-node src/relayer.ts",
     "test": "vitest run",
-    "dev": "vitest watch --runInBand"
+    "dev": "vitest watch --runInBand",
+    "status": "ts-node src/status.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "@types/node": "^24.9.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.3"
+    "vitest": "^4.0.3",
+    "hardhat": "^2.26.3"
   }
 }

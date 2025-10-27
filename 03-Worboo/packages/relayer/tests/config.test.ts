@@ -14,6 +14,7 @@ describe('loadConfig', () => {
     delete process.env.RELAYER_MAX_RETRIES;
     delete process.env.RELAYER_BACKOFF_MS;
     delete process.env.RELAYER_CACHE_PATH;
+    delete process.env.RELAYER_HEALTH_PATH;
   });
 
   it('throws when required variables are missing', () => {
@@ -37,6 +38,9 @@ describe('loadConfig', () => {
     expect(config.maxRetries).toBe(3);
     expect(config.backoffMs).toBe(1000);
     expect(config.cachePath).toBeUndefined();
+    expect(config.healthPath).toBeUndefined();
+    expect(config.healthPort).toBe(8787);
+    expect(config.healthHost).toBe('0.0.0.0');
   });
 
   it('honours custom reward amounts', () => {
@@ -50,7 +54,7 @@ describe('loadConfig', () => {
     expect(config.rewardPerWin.toString()).toBe('42500000000000000000'); // 42.5 WBOO
   });
 
-  it('parses retry/backoff overrides and cache path', () => {
+  it('parses retry/backoff overrides, cache path, and health settings', () => {
     process.env.RELAYER_RPC_URL = 'https://rpc.example';
     process.env.RELAYER_PRIVATE_KEY = '0xabc1234567890abc1234567890abc1234567890abc1234567890abc1234567';
     process.env.RELAYER_REGISTRY_ADDRESS = '0x1111111111111111111111111111111111111111';
@@ -58,10 +62,16 @@ describe('loadConfig', () => {
     process.env.RELAYER_MAX_RETRIES = '5';
     process.env.RELAYER_BACKOFF_MS = '1500';
     process.env.RELAYER_CACHE_PATH = '/tmp/custom.jsonl';
+    process.env.RELAYER_HEALTH_PATH = '/tmp/health.json';
+    process.env.RELAYER_HEALTH_PORT = '9999';
+    process.env.RELAYER_HEALTH_HOST = '127.0.0.1';
 
     const config = loadConfig();
     expect(config.maxRetries).toBe(5);
     expect(config.backoffMs).toBe(1500);
     expect(config.cachePath).toBe('/tmp/custom.jsonl');
+    expect(config.healthPath).toBe('/tmp/health.json');
+    expect(config.healthPort).toBe(9999);
+    expect(config.healthHost).toBe('127.0.0.1');
   });
 });

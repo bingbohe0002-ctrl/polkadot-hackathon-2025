@@ -58,4 +58,41 @@ describe('RelayerStatusBanner', () => {
 
     expect(container.firstChild).toBeNull()
   })
+
+  it('renders health information when relayer is processing', () => {
+    render(
+      <RelayerStatusBanner
+        notification={null}
+        pendingRewards={0}
+        onDismiss={jest.fn()}
+        health={{
+          status: 'processing',
+          queueDepth: 2,
+          totalMinted: 5,
+          failureCount: 0,
+          lastMintAt: Date.now(),
+        }}
+        lastUpdated={Date.now()}
+      />
+    )
+
+    expect(screen.getByText(/Relayer is processing submissions./i)).toBeInTheDocument()
+    expect(screen.getByText(/Status: processing/i)).toBeInTheDocument()
+    expect(screen.getByText(/Queue: 2/i)).toBeInTheDocument()
+  })
+
+  it('displays error message when health fetch fails', () => {
+    render(
+      <RelayerStatusBanner
+        notification={null}
+        pendingRewards={0}
+        onDismiss={jest.fn()}
+        health={null}
+        error="timeout"
+      />
+    )
+
+    expect(screen.getByText(/Health check failed/i)).toBeInTheDocument()
+    expect(screen.getByText(/timeout/i)).toBeInTheDocument()
+  })
 })

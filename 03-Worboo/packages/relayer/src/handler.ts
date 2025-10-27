@@ -1,7 +1,6 @@
 import type { ContractTransactionResponse } from 'ethers'
 import { ProcessedEventStore } from './store'
-
-type Logger = (message: string, meta?: Record<string, unknown>) => void
+import type { StructuredLogger } from './logger'
 
 type GameRecordedArgs = {
   player: string
@@ -25,7 +24,12 @@ type HandlerDependencies = {
   rewardPerWin: bigint
   maxRetries: number
   backoffMs: number
-  logger?: Logger
+  logger?: StructuredLogger
+  metrics?: {
+    recordGameVictory: () => void
+    recordMintSuccess: () => void
+    recordMintFailure: (error?: unknown) => void
+  }
 }
 
 const DEFAULT_FACTOR = 3
@@ -46,22 +50,25 @@ export const createGameRecordedHandler =
     rewardPerWin,
     maxRetries,
     backoffMs,
-    logger = () => undefined,
+    logger,
+    metrics,
   }: HandlerDependencies) =>
   async (args: GameRecordedArgs, event: GameRecordedEvent): Promise<void> => {
     if (!args.victory) {
-      logger('[relayer] skipping (loss)', { player: args.player })
+      logger?.info('[relayer] skipping (loss)', { player: args.player })
       return
     }
 
     const key = `${event.transactionHash}:${event.logIndex}`
     if (store.hasProcessed(key)) {
-      logger('[relayer] skipping already processed event', {
+      logger?.info('[relayer] skipping already processed event', {
         key,
         player: args.player,
       })
       return
     }
+
+    metrics?.recordGameVictory()
 
     const streakValue =
       typeof args.streak === 'bigint' ? args.streak : BigInt(args.streak ?? 0)
@@ -76,23 +83,26 @@ export const createGameRecordedHandler =
     while (attempt < maxRetries) {
       attempt += 1
       try {
-        logger('[relayer] minting reward', {
+        logger?.info('[relayer] minting reward', {
           player: args.player,
           streak: streakValue.toString(),
+          totalWins: totalWinsValue.toString(),
           attempt,
         })
         const tx = await token.mintTo(args.player, rewardPerWin)
-        logger('[relayer] mint transaction submitted', {
+        logger?.info('[relayer] mint transaction submitted', {
           key,
           txHash: tx.hash,
         })
         await tx.wait()
         await store.markProcessed(key, { txHash: tx.hash })
-        logger('[relayer] reward confirmed', { key, txHash: tx.hash })
+        metrics?.recordMintSuccess()
+        logger?.info('[relayer] reward confirmed', { key, txHash: tx.hash })
         return
       } catch (error) {
         lastError = error
-        logger('[relayer] mint failed, retrying mint', {
+        metrics?.recordMintFailure(error)
+        logger?.warn('[relayer] mint failed, retrying mint', {
           key,
           attempt,
           error: error instanceof Error ? error.message : serializeError(error),
@@ -107,11 +117,12 @@ export const createGameRecordedHandler =
       }
     }
 
-    logger('[relayer] mint failed permanently', {
+    logger?.error('[relayer] mint failed permanently', {
       key,
       error:
         lastError instanceof Error ? lastError.message : serializeError(lastError),
     })
+    metrics?.recordMintFailure(lastError ?? new Error('unknown failure'))
   }
 
 const serializeError = (value: unknown): string =>

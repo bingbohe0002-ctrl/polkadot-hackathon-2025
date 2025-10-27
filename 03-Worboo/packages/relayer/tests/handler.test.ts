@@ -13,6 +13,12 @@ const createMockStore = (): MockStore => ({
   markProcessed: vi.fn().mockResolvedValue(undefined),
 })
 
+const createLoggerMock = () => ({
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+})
+
 const createEvent = (overrides?: Partial<{ transactionHash: string; logIndex: number }>) => ({
   transactionHash: '0xtx',
   logIndex: 1,
@@ -38,7 +44,7 @@ describe('createGameRecordedHandler', () => {
       token: token as any,
       maxRetries: 1,
       backoffMs: 0,
-      logger: vi.fn(),
+      logger: createLoggerMock(),
     })
 
     await handler(
@@ -62,13 +68,20 @@ describe('createGameRecordedHandler', () => {
       mintTo: vi.fn().mockResolvedValue({ hash: '0xmint', wait: waitMock }),
     }
 
+    const metrics = {
+      recordGameVictory: vi.fn(),
+      recordMintSuccess: vi.fn(),
+      recordMintFailure: vi.fn(),
+    }
+
     const handler = createGameRecordedHandler({
       rewardPerWin: 10n,
       store,
       token: token as any,
       maxRetries: 1,
       backoffMs: 0,
-      logger: vi.fn(),
+      logger: createLoggerMock(),
+      metrics,
     })
 
     await handler(
@@ -84,6 +97,9 @@ describe('createGameRecordedHandler', () => {
     expect(store.markProcessed).toHaveBeenCalledWith('0xabc:2', {
       txHash: '0xmint',
     })
+    expect(metrics.recordGameVictory).toHaveBeenCalledTimes(1)
+    expect(metrics.recordMintSuccess).toHaveBeenCalledTimes(1)
+    expect(metrics.recordMintFailure).not.toHaveBeenCalled()
   })
 
   it('retries failed mints with backoff and only records success once', async () => {
@@ -101,7 +117,12 @@ describe('createGameRecordedHandler', () => {
         .mockResolvedValue({ hash: '0xok', wait: waitMock }),
     }
 
-    const logger = vi.fn()
+    const logger = createLoggerMock()
+    const metrics = {
+      recordGameVictory: vi.fn(),
+      recordMintSuccess: vi.fn(),
+      recordMintFailure: vi.fn(),
+    }
 
     const handler = createGameRecordedHandler({
       rewardPerWin: 5n,
@@ -110,6 +131,7 @@ describe('createGameRecordedHandler', () => {
       maxRetries: 3,
       backoffMs: 1000,
       logger,
+      metrics,
     })
 
     const promise = handler(
@@ -129,9 +151,13 @@ describe('createGameRecordedHandler', () => {
     expect(store.markProcessed).toHaveBeenCalledWith('0xe:7', {
       txHash: '0xok',
     })
-    expect(logger).toHaveBeenCalledWith(
+    expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining('retrying mint'),
       expect.objectContaining({ attempt: 2 })
     )
+    expect(logger.error).not.toHaveBeenCalled()
+    expect(metrics.recordGameVictory).toHaveBeenCalledTimes(1)
+    expect(metrics.recordMintFailure).toHaveBeenCalled()
+    expect(metrics.recordMintSuccess).toHaveBeenCalledTimes(1)
   })
 })

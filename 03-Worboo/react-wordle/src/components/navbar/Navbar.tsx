@@ -42,6 +42,7 @@ import { VocabularyModal } from '../vocabulary/VocabularyModal'
 import { useWorbooPlayer } from '../../hooks/useWorbooPlayer'
 import { WORBOO_CURRENCY_CODE } from '../../utils/shop'
 import { useRelayerNotifications } from '../../hooks/useRelayerNotifications'
+import { useRelayerHealth } from '../../hooks/useRelayerHealth'
 import { RelayerStatusBanner } from './RelayerStatusBanner'
 
 type Props = {
@@ -138,6 +139,14 @@ export const Navbar = ({
   } = useRelayerNotifications({
     tokenSymbol,
     onRewardAcknowledged: handleRewardAcknowledged,
+  })
+
+  const {
+    health: relayerHealth,
+    lastUpdated: relayerHealthUpdated,
+    error: relayerHealthError,
+  } = useRelayerHealth({
+    enabled: Boolean(process.env.REACT_APP_RELAYER_HEALTH_URL),
   })
 
   const requiresRegistration =
@@ -358,14 +367,23 @@ export const Navbar = ({
     }))
   }
 
+  const showRelayerBanner = Boolean(
+    relayerNotification ||
+      pendingRelayerRewards > 0 ||
+      (relayerHealth && relayerHealth.status !== 'idle')
+  )
+
   return (
     <div className="navbar">
-      {(relayerNotification || pendingRelayerRewards > 0) && (
+      {showRelayerBanner && (
         <div className="px-4 pt-3 sm:px-6">
           <RelayerStatusBanner
             notification={relayerNotification}
             pendingRewards={pendingRelayerRewards}
             onDismiss={clearRelayerNotification}
+            health={relayerHealth}
+            lastUpdated={relayerHealthUpdated}
+            error={relayerHealthError}
           />
         </div>
       )}

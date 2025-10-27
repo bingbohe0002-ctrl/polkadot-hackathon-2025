@@ -4,6 +4,9 @@ import registryArtifact from '../../contracts/artifacts/contracts/WorbooRegistry
 import tokenArtifact from '../../contracts/artifacts/contracts/WorbooToken.sol/WorbooToken.json'
 import { ProcessedEventStore } from './store'
 import { createGameRecordedHandler } from './handler'
+import { createLogger } from './logger'
+import { RelayerMetrics } from './metrics'
+import { startHealthServer } from './server'
 
 type GameRecordedEvent = {
   player: string
@@ -22,6 +25,8 @@ async function main() {
   const provider = new JsonRpcProvider(cfg.rpcUrl)
   const wallet = new Wallet(cfg.privateKey, provider)
 
+  const logger = createLogger({ context: { component: 'worboo-relayer' } })
+
   const registry = new Contract(
     cfg.registryAddress,
     registryArtifact.abi,
@@ -34,28 +39,43 @@ async function main() {
   )
 
   const store = await ProcessedEventStore.open({ filePath: cfg.cachePath })
+  const metrics = new RelayerMetrics({
+    healthPath: RelayerMetrics.resolveDefaultPath(cfg.healthPath),
+  })
+
+  const healthServer = await startHealthServer({
+    store,
+    metrics,
+    host: cfg.healthHost,
+    port: cfg.healthPort,
+    logger,
+  })
+
   const handler = createGameRecordedHandler({
     rewardPerWin: cfg.rewardPerWin,
     store,
     token: token as any,
     maxRetries: cfg.maxRetries,
     backoffMs: cfg.backoffMs,
-    logger: (message, meta) => {
-      if (meta) {
-        console.log(message, meta)
-      } else {
-        console.log(message)
-      }
+    logger,
+    metrics: {
+      recordGameVictory: () => metrics.recordGameVictory(),
+      recordMintSuccess: () => metrics.recordMintSuccess(),
+      recordMintFailure: (error?: unknown) => metrics.recordMintFailure(error),
     },
   })
 
-  console.log('[relayer] starting Worboo reward listener')
-  console.log(` - registry: ${cfg.registryAddress}`)
-  console.log(` - token:    ${cfg.tokenAddress}`)
-  console.log(` - reward:   ${cfg.rewardPerWin.toString()} wei`)
-  console.log(` - operator: ${wallet.address}`)
-  console.log(` - retries:  ${cfg.maxRetries} (backoff ${cfg.backoffMs}ms)`)
-  console.log(` - cache:    ${store.path}`)
+  logger.info('[relayer] starting Worboo reward listener', {
+    registry: cfg.registryAddress,
+    token: cfg.tokenAddress,
+    reward: cfg.rewardPerWin.toString(),
+    operator: wallet.address,
+    retries: cfg.maxRetries,
+    backoffMs: cfg.backoffMs,
+    cache: store.path,
+    healthPath: metrics.path,
+    healthServerPort: healthServer.address()?.port ?? cfg.healthPort,
+  })
 
   registry.on(
     'GameRecorded',
@@ -81,7 +101,7 @@ async function main() {
         totalWins,
       }
 
-      console.log('[relayer] GameRecorded received', {
+      logger.info('[relayer] GameRecorded received', {
         player,
         victory,
         streak: streak.toString(),
@@ -95,11 +115,17 @@ async function main() {
     }
   )
 
-  process.on('SIGINT', () => {
-    console.log('Shutting down relayer...')
+  const shutdown = () => {
+    logger.info('Shutting down relayer...')
     registry.removeAllListeners()
-    process.exit(0)
-  })
+    healthServer
+      .close()
+      .catch((error) => logger.error('[relayer] health server close failed', { error }))
+      .finally(() => process.exit(0))
+  }
+
+  process.on('SIGINT', shutdown)
+  process.on('SIGTERM', shutdown)
 }
 
 main().catch((error) => {
