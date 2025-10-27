@@ -179,6 +179,9 @@ RELAYER_CACHE_PATH=.cache/processed-events.jsonl
 RELAYER_HEALTH_PATH=.cache/health.json
 RELAYER_HEALTH_HOST=0.0.0.0
 RELAYER_HEALTH_PORT=8787
+RELAYER_LOG_FILE=.logs/worboo-relayer.log
+RELAYER_LOG_MAX_BYTES=5242880        # rotate when file exceeds 5 MB
+RELAYER_LOG_BACKUPS=5                # keep 5 rotated files
 ```
 
 The relayer watches `GameRecorded` events, persists processed hashes to disk (safe for restarts), and mints `WBOO` for victorious players using the reward amount defined in `.env`. The UI navbar displays relayer status so players see pending wins and successful mints in real time. To inspect relayer health from the CLI run:
@@ -237,7 +240,9 @@ For a deeper design discussion see [`doc/mvp-architecture.md`](doc/mvp-architect
 2. ✅ Frontend connects to Moonbase Alpha, handles on-chain registration, balance display, and purchases.
 3. ✅ Documentation refreshed (this README, `doc/README - polkadot.md`, and deployment notes).
 4. ✅ Relayer package ready with environment template & reward workflow.
-5. 🔜 Optional: add demo video + screenshots before final submission.
+5. 🔜 
+   1. Deck:
+   2. Demo:
 
 ---
 

@@ -146,8 +146,9 @@ Confirm the transaction in block explorers such as https://moonbase.moonscan.io/
    RELAYER_HEALTH_HOST=0.0.0.0                         # optional, HTTP bind host
    RELAYER_HEALTH_PORT=8787
 RELAYER_LOG_FILE=.logs/worboo-relayer.log
-RELAYER_LOG_MAX_BYTES=5242880
-RELAYER_LOG_BACKUPS=5                            # optional, defaults to 8787
+RELAYER_LOG_MAX_BYTES=5242880        # optional, rotate when file exceeds 5 MB
+RELAYER_LOG_BACKUPS=5                # optional, number of rotated files to keep
+# optional, defaults to 8787
    ```
 3. Start the relayer:
    ```bash
@@ -220,4 +221,5 @@ The same payload is available over HTTP at `http://localhost:8787/healthz` (adju
 ---
 
 All steps complete—Worboo is now live on Moonbase Alpha with automatic reward minting. Happy hacking! 🟩🟨⬛
+
 
