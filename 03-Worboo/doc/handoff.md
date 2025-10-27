@@ -17,8 +17,8 @@
 
 ## Focus for Next Contributors
 
-- **Short term**: polish relayer UX, add monitoring/log rotation, and document failure recovery. Consider retry queues or a small database for processed events.
-- **Medium term**: build the reward relayer into a proper service (Dockerfile, PM2/forever scripts) and integrate an indexer for leaderboards.
+- **Short term**: land relayer persistence (disk cache for processed events), add retry/backoff and tests, then surface mint status cues in the React navbar.
+- **Medium term**: build the reward relayer into a proper service (Dockerfile, PM2/forever scripts), integrate telemetry, and wire an indexer for leaderboards.
 - **Long term**: merge ZK proof validation, experiment with PVM/ink! contracts, and design governance/economics for community seasons.
 
 ## Reference Commands
@@ -39,4 +39,3 @@
 - For production: consider swapping to Moonbeam RPCs and revisiting gas estimates (Moonbase uses 1 gwei baseline).
 
 Continue iterating, and log major decisions back into this document or the roadmap so future teammates stay aligned. Good luck! 🟩🟨⬛
-

@@ -5,7 +5,7 @@
 - [x] Install OpenZeppelin/contracts, hardhat-toolbox, dotenv, @nomicfoundation/hardhat-ignition.
 - [x] Configure networks: `hardhat`, `moonbase` (RPC + chainId 1287), `moonbeam`.
 - [x] Generate `.env.example` with `PRIVATE_KEY`, `MOONBASE_RPC`, `MOONBEAM_RPC`.
-- [ ] Add formatting/linting (Prettier, ESLint) and `pnpm` workspace glue if needed.
+- [ ] Add shared formatting/linting config (workspace-level Prettier/ESLint) and evaluate `pnpm` glue if needed.
 
 ## Milestone 1 – Core Contracts (Day 1–2)
 - [x] Scaffold `WorbooRegistry`, `WorbooToken`, `WorbooShop` contracts (OpenZeppelin-based).
@@ -25,7 +25,24 @@
 - [x] Document testing commands and contribution workflow.
 - [x] Prepare demo walkthrough script.
 
+## Milestone 4 – Relayer Reliability (Day 4)
+- [ ] Persist processed `GameRecorded` identifiers across restarts to avoid double minting.
+- [ ] Add configurable retry/backoff strategy for failed mint transactions.
+- [ ] Extend relayer unit tests to cover persistence and failure recovery (TDD).
+- [ ] Update deployment guide with relayer storage/operations notes.
+
+## Milestone 5 – Player Feedback & Monitoring (Day 5)
+- [ ] Surface relayer success/failure notifications in the React UI (e.g., navbar toast/log).
+- [ ] Cover the new UX with React Testing Library specs guarding hooks/components.
+- [ ] Add lightweight telemetry hooks (console or log aggregation stub) for hackathon demos.
+
+## Milestone 6 – Quality Gates (Day 5–6)
+- [ ] Capture contract gas snapshot + coverage report (`forge coverage`, `npx hardhat coverage`).
+- [ ] Wire relayer tests into CI (vitest) and document command in README.
+- [ ] Audit frontend test commands, modernise Jest/Vitest config once CRA migration begins.
+
 ## Optional Stretch
-- [ ] Simple Subsquid indexer for leaderboards.
-- [ ] Off-chain relayer prototype for auto minting rewards.
+- [ ] Simple Subsquid/SubQuery indexer for leaderboards.
+- [x] Off-chain relayer prototype for auto minting rewards.
 - [ ] UI polish for wallet onboarding (Talisman/Polkadot{.js} support).
+- [ ] React/Vite migration to retire legacy CRA tooling.

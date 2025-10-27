@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import {
   ChartBarIcon,
@@ -41,6 +41,8 @@ import { useAccount } from 'wagmi'
 import { VocabularyModal } from '../vocabulary/VocabularyModal'
 import { useWorbooPlayer } from '../../hooks/useWorbooPlayer'
 import { WORBOO_CURRENCY_CODE } from '../../utils/shop'
+import { useRelayerNotifications } from '../../hooks/useRelayerNotifications'
+import { RelayerStatusBanner } from './RelayerStatusBanner'
 
 type Props = {
   setIsInfoModalOpen: (value: boolean) => void
@@ -101,6 +103,7 @@ export const Navbar = ({
     isPurchasing,
     inventory: onChainInventory,
     isReady: isWorbooReady,
+    refresh,
   } = worbooPlayer
 
   useEffect(() => {
@@ -123,6 +126,19 @@ export const Navbar = ({
     }
     return balanceFormatted
   }, [balanceFormatted])
+
+  const handleRewardAcknowledged = useCallback(() => {
+    refresh()
+  }, [refresh])
+
+  const {
+    notification: relayerNotification,
+    clearNotification: clearRelayerNotification,
+    pendingRewards: pendingRelayerRewards,
+  } = useRelayerNotifications({
+    tokenSymbol,
+    onRewardAcknowledged: handleRewardAcknowledged,
+  })
 
   const requiresRegistration =
     isConnected && isWorbooReady && profile && !profile.isRegistered
@@ -344,6 +360,15 @@ export const Navbar = ({
 
   return (
     <div className="navbar">
+      {(relayerNotification || pendingRelayerRewards > 0) && (
+        <div className="px-4 pt-3 sm:px-6">
+          <RelayerStatusBanner
+            notification={relayerNotification}
+            pendingRewards={pendingRelayerRewards}
+            onDismiss={clearRelayerNotification}
+          />
+        </div>
+      )}
       <div className="navbar-content px-5">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
