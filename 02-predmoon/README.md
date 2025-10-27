@@ -2,9 +2,9 @@
 
 ## Introduction
 
--- project name: PredMoon
--- project creation date: 2025-10-01
--- project background, including github link before, won any rewards before
+* project name: PredMoon
+* project creation date: 2025-10-01
+* project background, including github link before, won any rewards before
 
 
 ## Links
@@ -26,7 +26,7 @@
 
 Our team brings extensive expertise in both Web2 and Web3 technologies, with 20+ global hackathon awards and successful product scaling experience. We combine deep technical knowledge in blockchain development, frontend engineering, and AI tools with strong entrepreneurial backgrounds from major tech companies including 360, RC, iHealth, and Citibank Singapore.
 
--- the problem the project try to resolve
+* the problem the project try to resolve
 
 ### Product Motivation
 
@@ -34,11 +34,11 @@ We identified a significant gap in the prediction market space - the lack of use
 
 
 ## Features planned for the Hackathon
--- The status of project before participate the Hackathon
+* The status of project before participate the Hackathon
 
 Have a polymarket clone version of the Prediction Market Platform.
 
--- Features are planed for the Hackathon
+* Features are planed for the Hackathon
 
 [x] A Tinder-style interface for users to trade their knowledge on-chain.
 [x] A smart contract-based prediction market platform that allows users to create, trade, and settle predictions.
@@ -46,11 +46,11 @@ Have a polymarket clone version of the Prediction Market Platform.
 [x] A community-driven platform where users can connect, trade, and learn from each other.
 
 ## Architect
--- Diagram of architect for the project
+* Diagram of architect for the project
 
 [![structure](./flow.jpg)]
 
--- Description for each components
+* Description for each components
 
 - Frontend: Swipe trading system/embedded wallet/cross-chain transfer integration, etc.
 - Backend: Off-chain order matching/hybrid decentralized exchange model
@@ -72,8 +72,6 @@ Have a polymarket clone version of the Prediction Market Platform.
 
 
 ## Track and bounty
--- track you choose
-
 赛道一：构建下一代 Web3 生态系统
 
 
