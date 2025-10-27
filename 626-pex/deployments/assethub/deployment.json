@@ -1,0 +1,27 @@
+{
+  "network": "assethub-testnet",
+  "chainId": 420420422,
+  "timestamp": "2025-10-26T17:48:16.347Z",
+  "deployer": "0x040ae454BB06F60dB62f2B40E09dbCc62D08f4Eb",
+  "contracts": {
+    "OracleAdapter": "0x7117B4624Fc25df086eE5ca5EA5B87505D24EF42",
+    "MarginVault": "0x1Bf73De534fe5ff1d45680b658fCdF48C835eC62",
+    "OrderBook": "0x2953E13bF1253Ae46F2350FaDb0D80DBE9a189D5",
+    "PerpMarket": "0x542e07EE5C26B1b168eEE2434aE282Ffc1baa368",
+    "SpotMarket": "0xd1207f49538f638b0ABc4D04Db77E3eAeb7CA6a6",
+    "SpotOrderBook": "0x3085d1e42f93649c3a0e9395410973A69A7E7976",
+    "TokenListingGovernor": "0x404e02efC5B62273Ab947905cF0590566B453628",
+    "RiskEngine": "0xFbFaCf16e3fdEEc226dfE4385C5777455D4c5aa9",
+    "FeeCollector": "0xceC75a020D649D95637e789f35B2D422009972aB"
+  },
+  "tokens": {
+    "USDC": "0x38bfa3e4Ad582a04de3fb518Dcb8e2b94D3F6226",
+    "BTC": "0x07f2055e0c9BD7330796F60BD54a2ABBcD2478A2",
+    "USDT": "0xF709b6038335E303eA7597bc19887E29508F3be8"
+  },
+  "markets": [
+    "BTC-USD",
+    "PAS/USDC",
+    "USDC/PAS"
+  ]
+}

@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    @apply border-border;
+  }
+  html, body {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  img, svg, video, canvas, audio, iframe {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Trading specific styles */
+@layer components {
+  .trading-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr 300px;
+    grid-template-rows: 60px 1fr 200px;
+    grid-template-areas:
+      "header header header"
+      "orderbook chart positions"
+      "orders orders orders";
+    height: 100vh;
+    gap: 1px;
+    background-color: hsl(var(--border));
+  }
+
+  .trading-panel {
+    @apply bg-card border border-border;
+  }
+
+  .price-up {
+    @apply text-success;
+  }
+
+  .price-down {
+    @apply text-danger;
+  }
+
+  .price-neutral {
+    @apply text-muted-foreground;
+  }
+
+  .orderbook-row {
+    @apply hover:bg-muted/50 cursor-pointer transition-colors;
+  }
+
+  .orderbook-buy {
+    @apply bg-success/10 hover:bg-success/20;
+  }
+
+  .orderbook-sell {
+    @apply bg-danger/10 hover:bg-danger/20;
+  }
+
+  .position-long {
+    @apply text-success border-success/20 bg-success/5;
+  }
+
+  .position-short {
+    @apply text-danger border-danger/20 bg-danger/5;
+  }
+
+  .chart-container {
+    @apply relative w-full h-full bg-card;
+  }
+
+  .loading-spinner {
+    @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary;
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+  }
+
+  .number-input {
+    @apply font-mono text-right;
+  }
+
+  .trading-button {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .buy-button {
+    @apply trading-button bg-success hover:bg-success-dark text-white focus:ring-success;
+  }
+
+  .sell-button {
+    @apply trading-button bg-danger hover:bg-danger-dark text-white focus:ring-danger;
+  }
+
+  .cancel-button {
+    @apply trading-button bg-muted hover:bg-muted/80 text-muted-foreground focus:ring-muted;
+  }
+}
+
+/* Scrollbar styles */
+@layer utilities {
+  .scrollbar-trading {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted)) transparent;
+  }
+
+  .scrollbar-trading::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-trading::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-trading::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted));
+    border-radius: 3px;
+  }
+
+  .scrollbar-trading::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground));
+  }
+}
+
+/* Animation keyframes */
+@keyframes flash-green {
+  0% { background-color: rgba(16, 185, 129, 0.3); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-red {
+  0% { background-color: rgba(239, 68, 68, 0.3); }
+  100% { background-color: transparent; }
+}
+
+.flash-green {
+  animation: flash-green 0.5s ease-out;
+}
+
+.flash-red {
+  animation: flash-red 0.5s ease-out;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .trading-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px 300px 1fr 200px 200px;
+    grid-template-areas:
+      "header"
+      "chart"
+      "orderbook"
+      "positions"
+      "orders";
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
