@@ -93,6 +93,25 @@ npm start
 
 RainbowKit presents Moonbase Alpha by default. Connect a wallet, register on-chain, and start purchasing items with WBOO.
 
+### 7. (Optional) Start the reward relayer
+
+Grant the `GAME_MASTER_ROLE` to the relayer wallet (so it can mint rewards):
+
+```bash
+cd packages/contracts
+npx hardhat run --network moonbase scripts/grantGameMaster.ts <tokenAddress> <relayerAddress>
+```
+
+Then configure and launch the listener:
+
+```bash
+cd ../relayer
+cp .env.example .env   # fill in RPC URL, private key, registry & token addresses
+npm run start
+```
+
+The relayer watches `GameRecorded` events and mints `WBOO` for victorious players using the reward amount defined in `.env`.
+
 ---
 
 ## Testing & Quality Gates
@@ -137,7 +156,7 @@ For a deeper design discussion see [`doc/mvp-architecture.md`](doc/mvp-architect
 1. ✅ Contracts compiled & tests green (`packages/contracts`).
 2. ✅ Frontend connects to Moonbase Alpha, handles on-chain registration, balance display, and purchases.
 3. ✅ Documentation refreshed (this README, `doc/README - polkadot.md`, and deployment notes).
-4. 🔜 Record deployment addresses + faucet instructions in `doc/README - polkadot.md`.
+4. ✅ Relayer package ready with environment template & reward workflow.
 5. 🔜 Optional: add demo video + screenshots before final submission.
 
 ---
@@ -148,6 +167,7 @@ Short term goals are tracked in [`doc/implementation-plan.md`](doc/implementatio
 
 - Add automated ABI export pipeline from Hardhat to the React app.
 - Expand React test coverage once the CRA/Jest toolchain is upgraded.
+- Deploy the auto-mint relayer (see `packages/relayer`) and extend it with persistence/indexing (details in [`doc/roadmap-next.md`](doc/roadmap-next.md)).
 - Integrate the ZK proof relayer + IPFS pipeline (v2 scope).
 - Explore PVM/ink! migration for advanced gameplay and governance.
 
@@ -156,6 +176,9 @@ Short term goals are tracked in [`doc/implementation-plan.md`](doc/implementatio
 ## Additional Resources
 
 - [Polkadot Hackathon README](doc/README%20-%20polkadot.md)
+- [Deployment Guide](doc/deployment-guide.md)
+- [Demo Playbook](doc/demo-playbook.md)
+- [Post-MVP Roadmap](doc/roadmap-next.md)
 - [Migrating Ethereum DApps to Polkadot – Technical Roadmap & Strategy (PDF)](doc/Migrating%20Ethereum%20DApps%20to%20Polkadot%20–%20Technical%20Roadmap%20%26%20Strategy.pdf)
 - [Moonbeam Docs](https://docs.moonbeam.network/)
 - [RainbowKit](https://www.rainbowkit.com/) / [wagmi](https://wagmi.sh/) references.
