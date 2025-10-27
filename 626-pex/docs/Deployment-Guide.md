@@ -210,6 +210,7 @@ NEXT_PUBLIC_RPC_URL=https://testnet-passet-hub-eth-rpc.polkadot.io
 
 ```
 cd frontend
+npm install
 npm run dev
 ```
 

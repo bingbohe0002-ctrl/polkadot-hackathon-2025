@@ -29,6 +29,16 @@
 
 > 愿景：在不牺牲用户体验的前提下，通过链上撮合与完整透明，重建交易的信任与秩序；通过 DAO 协作与开源共建，让协议持续迭代与进化；通过跨链能力与高性能执行，将去中心化的优势带入更广泛的资产与用户群体。
 
+## 快速开始
+本项目合约已部署到AssetHub测试网，可以直接启动前端进行体验。
+```
+cd frontend
+npm install
+npm run dev
+前端默认监听3000端口，在浏览器打开`http://localhost:3000/`后即可体验。
+```
+如需从零开始重新部署前后端，请查看 [Deployment-Guide.md](docs/Deployment-Guide.md) 了解详细的部署指南。
+
 ## 项目架构
 
 ```
@@ -114,10 +124,6 @@ pex/
 - Subsquid Indexer
 - WebSocket Gateway
 - Oracle Price Updater
-
-## 快速开始
-
-请查看 [Deployment-Guide.md](docs/Deployment-Guide.md) 了解详细的部署指南。
 
 ## 核心特性
 
