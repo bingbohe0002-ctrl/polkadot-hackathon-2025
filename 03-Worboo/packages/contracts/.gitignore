@@ -1,0 +1,8 @@
+dist/
+cache/
+out/
+artifacts/
+coverage/
+node_modules/
+.env
+
