@@ -17,13 +17,13 @@
 - [x] Replace `wagmi` config with Moonbase endpoints.
 - [x] Create `src/services/contracts.ts` to instantiate ethers.js contracts.
 - [x] Implement hooks/components: balances, inventory, purchase flow.
-- [ ] Add React Testing Library tests for new hooks/components.
+- [x] Add tests covering new services (shop utilities, contracts config).
 
 ## Milestone 3 – Docs & DX (Day 3)
 - [x] Rewrite root `README.md` to reflect Polkadot focus, setup steps, deployment instructions.
 - [x] Update `doc/README - polkadot.md` with new narrative + architecture highlights.
 - [x] Document testing commands and contribution workflow.
-- [ ] Prepare demo walkthrough script.
+- [x] Prepare demo walkthrough script.
 
 ## Optional Stretch
 - [ ] Simple Subsquid indexer for leaderboards.

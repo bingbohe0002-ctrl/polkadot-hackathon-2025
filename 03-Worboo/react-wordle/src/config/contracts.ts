@@ -1,4 +1,4 @@
-import { getAddress } from 'ethers'
+import { ethers } from 'ethers'
 
 export type ContractsConfig = {
   registry?: `0x${string}`
@@ -13,7 +13,7 @@ const WORBOO_SHOP_ENV = 'REACT_APP_WORBOO_SHOP'
 const sanitizeAddress = (value?: string | null): `0x${string}` | undefined => {
   if (!value) return undefined
   try {
-    return getAddress(value) as `0x${string}`
+    return ethers.utils.getAddress(value) as `0x${string}`
   } catch {
     return undefined
   }

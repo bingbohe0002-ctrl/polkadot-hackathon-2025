@@ -79,6 +79,7 @@ The test suite covers registration edge cases, streak logic, token permissions, 
 ```bash
 # from packages/contracts
 npx hardhat ignition deploy ./ignition/modules/WorbooModule.ts --network moonbase
+npm run export:addresses
 ```
 
 Populate the frontend `.env` addresses with the resulting deployment output.
@@ -99,7 +100,7 @@ RainbowKit presents Moonbase Alpha by default. Connect a wallet, register on-cha
 | Layer | Command | Notes |
 | --- | --- | --- |
 | Smart contracts | `npm run test` (in `packages/contracts`) | Hardhat + ethers v6, deterministic tests for registry/token/shop. |
-| Frontend services | `npm test -- --watch=false --testPathPattern="shop\|contracts"` | Runs the new utility/config tests. Legacy CRA tests currently require additional polyfills (see “Known Issues”). |
+| Frontend services | `npm test -- --watch=false --testPathPattern="(shop|contracts|words)"` | Runs the curated unit tests (shop utilities, contract config, word helpers). Legacy CRA tests currently require additional polyfills (see “Known Issues”). |
 
 ### Known Issues
 
@@ -162,4 +163,3 @@ Short term goals are tracked in [`doc/implementation-plan.md`](doc/implementatio
 ---
 
 Made with 🟩🟨⬛ by the Worboo team for the Dot Your Future hackathon.
-
