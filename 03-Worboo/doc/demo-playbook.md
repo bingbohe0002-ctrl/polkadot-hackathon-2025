@@ -14,6 +14,7 @@ This guide is written for live judging sessions. Follow it to demonstrate the Wo
   npm run export:addresses > ../../react-wordle/.env.local
   ```
   (Alternatively, copy the output into `react-wordle/.env`.)
+- [ ] Check relayer health: `cd packages/relayer && npm run status` (expect `status: "idle"`).
 - [ ] Run `npm run test` inside `packages/contracts` to show the TDD workflow.
 - [ ] Start the frontend with `npm start` inside `react-wordle`.
 
@@ -37,6 +38,8 @@ This guide is written for live judging sessions. Follow it to demonstrate the Wo
 
 ### Step 4 – Claim Rewards & Shop (60s)
 - Highlight the **WBOO Balance** indicator in the shop modal (navbar → bag icon).
+- Showcase the new relayer banner in the navbar (“Relayer minted +10 WBOO”) and call out the pending-state warning if the relayer is offline.
+- Optionally show `npm run status` or `curl http://localhost:8787/healthz` so judges see the queue depth / heartbeat JSON.
 - Demonstrate purchasing an item that costs WBOO (e.g., `Classic Worboo`). The UI will trigger the `purchase` contract call, burn tokens, and add the ERC-1155 item to inventory.
 - Equip the newly acquired cosmetic to show the state change.
 

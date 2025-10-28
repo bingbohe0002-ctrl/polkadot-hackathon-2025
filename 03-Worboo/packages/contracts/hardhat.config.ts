@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-ignition";
+import "hardhat-gas-reporter";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -40,6 +41,12 @@ const config: HardhatUserConfig = {
     cache: "./cache",
     artifacts: "./artifacts"
   },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS === "true",
+    currency: "USD",
+    token: "DEV",
+    coinmarketcap: process.env.COINMARKETCAP_KEY
+  },
   typechain: {
     outDir: "types",
     target: "ethers-v6"
@@ -47,4 +54,3 @@ const config: HardhatUserConfig = {
 };
 
 export default config;
-

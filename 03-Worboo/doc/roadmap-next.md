@@ -1,7 +1,7 @@
 # Worboo Feature Roadmap (Post-MVP)
 
 ## Phase 1 – Operational Hardening
-- **Auto mint relayer**: implement a lightweight Node service listening to `GameRecorded` events and minting WBOO rewards via `WorbooToken.mintTo`.
+- **Auto mint relayer**: persistence, retry/backoff, reward banner, and CLI health snapshot shipped; next add HTTP health endpoints, structured logs aggregation, and cache rotation.
 - **Indexer integration**: bootstrap a Subsquid (or SubQuery) project to expose leaderboard APIs with streak and completion stats.
 - **UI telemetry**: instrument React Query cache misses, wallet connection failures, and purchase errors for better observability during mainnet launch.
 

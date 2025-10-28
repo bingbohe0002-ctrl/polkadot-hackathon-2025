@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import {
   ChartBarIcon,
@@ -41,6 +41,9 @@ import { useAccount } from 'wagmi'
 import { VocabularyModal } from '../vocabulary/VocabularyModal'
 import { useWorbooPlayer } from '../../hooks/useWorbooPlayer'
 import { WORBOO_CURRENCY_CODE } from '../../utils/shop'
+import { useRelayerNotifications } from '../../hooks/useRelayerNotifications'
+import { useRelayerHealth } from '../../hooks/useRelayerHealth'
+import { RelayerStatusBanner } from './RelayerStatusBanner'
 
 type Props = {
   setIsInfoModalOpen: (value: boolean) => void
@@ -101,6 +104,7 @@ export const Navbar = ({
     isPurchasing,
     inventory: onChainInventory,
     isReady: isWorbooReady,
+    refresh,
   } = worbooPlayer
 
   useEffect(() => {
@@ -123,6 +127,27 @@ export const Navbar = ({
     }
     return balanceFormatted
   }, [balanceFormatted])
+
+  const handleRewardAcknowledged = useCallback(() => {
+    refresh()
+  }, [refresh])
+
+  const {
+    notification: relayerNotification,
+    clearNotification: clearRelayerNotification,
+    pendingRewards: pendingRelayerRewards,
+  } = useRelayerNotifications({
+    tokenSymbol,
+    onRewardAcknowledged: handleRewardAcknowledged,
+  })
+
+  const {
+    health: relayerHealth,
+    lastUpdated: relayerHealthUpdated,
+    error: relayerHealthError,
+  } = useRelayerHealth({
+    enabled: Boolean(process.env.REACT_APP_RELAYER_HEALTH_URL),
+  })
 
   const requiresRegistration =
     isConnected && isWorbooReady && profile && !profile.isRegistered
@@ -342,8 +367,26 @@ export const Navbar = ({
     }))
   }
 
+  const showRelayerBanner = Boolean(
+    relayerNotification ||
+      pendingRelayerRewards > 0 ||
+      (relayerHealth && relayerHealth.status !== 'idle')
+  )
+
   return (
     <div className="navbar">
+      {showRelayerBanner && (
+        <div className="px-4 pt-3 sm:px-6">
+          <RelayerStatusBanner
+            notification={relayerNotification}
+            pendingRewards={pendingRelayerRewards}
+            onDismiss={clearRelayerNotification}
+            health={relayerHealth}
+            lastUpdated={relayerHealthUpdated}
+            error={relayerHealthError}
+          />
+        </div>
+      )}
       <div className="navbar-content px-5">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">

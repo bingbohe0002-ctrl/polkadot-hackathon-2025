@@ -18,7 +18,59 @@ An on-chain, gameified Wordle experience for the **Dot Your Future** hackathon. 
 
 ---
 
-## Repository Map
+## Architecture
+
+```mermaid
+graph TD
+    subgraph Frontend
+        A[React Wordle App]
+        B[useRelayerNotifications]
+        C[useRelayerHealth]
+    end
+
+    subgraph Relayer
+        D[GameRecorded Listener]
+        E[Metrics & Persistent Cache]
+        F[/healthz & status CLI]
+        G[Structured Logger]
+    end
+
+    subgraph Contracts
+        H[WorbooRegistry]
+        I[WorbooToken]
+        J[WorbooShop]
+    end
+
+    A --> B
+    A --> C
+    B --> D
+    C --> F
+    D --> H
+    D --> I
+    E --> F
+    G --> F
+    D --> E
+
+    H --> I
+    I --> J
+```
+
+```mermaid
+sequenceDiagram
+    participant Player
+    participant Frontend
+    participant Registry
+    participant Relayer
+    participant Token
+
+    Player->>Frontend: recordGame(dayId, guesses, victory)
+    Frontend->>Registry: recordGame(...)
+    Registry->>Relayer: emit GameRecorded
+    Relayer-->>Relayer: dedupe & enqueue
+    Relayer->>Token: mintTo(player)
+    Token-->>Player: WBOO balance +
+    Relayer-->>Frontend: /healthz queueDepth ↓
+```\n## Repository Map
 
 | Path | Purpose |
 | --- | --- |
@@ -62,7 +114,10 @@ For the frontend (`react-wordle/.env`), fill in contract addresses after deploym
 REACT_APP_WORBOO_REGISTRY=0x...
 REACT_APP_WORBOO_TOKEN=0x...
 REACT_APP_WORBOO_SHOP=0x...
+REACT_APP_RELAYER_HEALTH_URL=http://localhost:8787/healthz
 ```
+
+> If `REACT_APP_RELAYER_HEALTH_URL` is omitted, the frontend defaults to `/healthz` on the same origin, so local dev can rely on the health server port defined above.
 
 ### 4. Compile & test contracts
 
@@ -93,6 +148,51 @@ npm start
 
 RainbowKit presents Moonbase Alpha by default. Connect a wallet, register on-chain, and start purchasing items with WBOO.
 
+### 7. (Optional) Start the reward relayer
+
+Grant the `GAME_MASTER_ROLE` to the relayer wallet (so it can mint rewards):
+
+```bash
+cd packages/contracts
+npx hardhat run --network moonbase scripts/grantGameMaster.ts <tokenAddress> <relayerAddress>
+```
+
+Then configure and launch the listener:
+
+```bash
+cd ../relayer
+cp .env.example .env   # fill in RPC URL, private key, registry & token addresses
+npm run start
+```
+
+`packages/relayer/.env` fields:
+
+```ini
+RELAYER_RPC_URL=https://rpc.api.moonbase.moonbeam.network
+RELAYER_PRIVATE_KEY=0xRELAYER_PRIVATE_KEY
+RELAYER_REGISTRY_ADDRESS=0x...
+RELAYER_TOKEN_ADDRESS=0x...
+RELAYER_REWARD_PER_WIN=10
+RELAYER_MAX_RETRIES=3
+RELAYER_BACKOFF_MS=1000
+RELAYER_CACHE_PATH=.cache/processed-events.jsonl
+RELAYER_HEALTH_PATH=.cache/health.json
+RELAYER_HEALTH_HOST=0.0.0.0
+RELAYER_HEALTH_PORT=8787
+RELAYER_LOG_FILE=.logs/worboo-relayer.log
+RELAYER_LOG_MAX_BYTES=5242880        # rotate when file exceeds 5 MB
+RELAYER_LOG_BACKUPS=5                # keep 5 rotated files
+```
+
+The relayer watches `GameRecorded` events, persists processed hashes to disk (safe for restarts), and mints `WBOO` for victorious players using the reward amount defined in `.env`. The UI navbar displays relayer status so players see pending wins and successful mints in real time. To inspect relayer health from the CLI run:
+
+```bash
+cd packages/relayer
+npm run status
+```
+
+An HTTP endpoint is also exposed at `http://localhost:8787/healthz` (configurable via env) so dashboards or the frontend can read queue depth and heartbeat information.
+
 ---
 
 ## Testing & Quality Gates
@@ -101,6 +201,8 @@ RainbowKit presents Moonbase Alpha by default. Connect a wallet, register on-cha
 | --- | --- | --- |
 | Smart contracts | `npm run test` (in `packages/contracts`) | Hardhat + ethers v6, deterministic tests for registry/token/shop. |
 | Frontend services | `npm test -- --watch=false --testPathPattern="(shop|contracts|words)"` | Runs the curated unit tests (shop utilities, contract config, word helpers). Legacy CRA tests currently require additional polyfills (see “Known Issues”). |
+| Relayer service | `npm test` (in `packages/relayer`) | Vitest suite covering config parsing, persistence store, and mint retry handler. |
+| Relayer health | `npm run status` (in `packages/relayer`) | Prints JSON snapshot covering queue depth, last mint, and cache size. |
 
 ### Known Issues
 
@@ -137,8 +239,10 @@ For a deeper design discussion see [`doc/mvp-architecture.md`](doc/mvp-architect
 1. ✅ Contracts compiled & tests green (`packages/contracts`).
 2. ✅ Frontend connects to Moonbase Alpha, handles on-chain registration, balance display, and purchases.
 3. ✅ Documentation refreshed (this README, `doc/README - polkadot.md`, and deployment notes).
-4. 🔜 Record deployment addresses + faucet instructions in `doc/README - polkadot.md`.
-5. 🔜 Optional: add demo video + screenshots before final submission.
+4. ✅ Relayer package ready with environment template & reward workflow.
+5. 🔜 
+   1. Deck:
+   2. Demo:
 
 ---
 
@@ -148,6 +252,7 @@ Short term goals are tracked in [`doc/implementation-plan.md`](doc/implementatio
 
 - Add automated ABI export pipeline from Hardhat to the React app.
 - Expand React test coverage once the CRA/Jest toolchain is upgraded.
+- Deploy the auto-mint relayer (see `packages/relayer`) and extend it with persistence/indexing (details in [`doc/roadmap-next.md`](doc/roadmap-next.md)).
 - Integrate the ZK proof relayer + IPFS pipeline (v2 scope).
 - Explore PVM/ink! migration for advanced gameplay and governance.
 
@@ -156,6 +261,11 @@ Short term goals are tracked in [`doc/implementation-plan.md`](doc/implementatio
 ## Additional Resources
 
 - [Polkadot Hackathon README](doc/README%20-%20polkadot.md)
+- [Deployment Guide](doc/deployment-guide.md)
+- [Demo Playbook](doc/demo-playbook.md)
+- [Post-MVP Roadmap](doc/roadmap-next.md)
+- [Testing Matrix & Coverage Checklist](doc/testing-matrix.md)
+- [Observability Guide](doc/observability.md)
 - [Migrating Ethereum DApps to Polkadot – Technical Roadmap & Strategy (PDF)](doc/Migrating%20Ethereum%20DApps%20to%20Polkadot%20–%20Technical%20Roadmap%20%26%20Strategy.pdf)
 - [Moonbeam Docs](https://docs.moonbeam.network/)
 - [RainbowKit](https://www.rainbowkit.com/) / [wagmi](https://wagmi.sh/) references.
@@ -163,3 +273,7 @@ Short term goals are tracked in [`doc/implementation-plan.md`](doc/implementatio
 ---
 
 Made with 🟩🟨⬛ by the Worboo team for the Dot Your Future hackathon.
+
+
+
+
