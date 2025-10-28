@@ -12,11 +12,12 @@ const JoinGroup = () => {
 
  // const [xmtpClient, setXmtpClient] = useState(null);
   const [loading, setLoading] = useState(false);
-  // 存储用户的 NFT 数量
+  // 存储用户的 NFT 等级
   const [nftBalance, setNftBalance] = useState(0);
 // 合约 ABI
 const NFT_ABI = [
-  "function balanceOf(address owner) view returns (uint256)", // 已有（用于获取NFT数量）
+  "function balanceOf(address owner) view returns (uint256)",
+  "function getFirstTokenOfOwner(address owner) external view returns (uint256 tokenId, Tier tier, string memory uri)",   // 已有（用于获取NFT数量）
 ];
   // 检查并连接 MetaMask
   const connectMetaMask = async () => {
@@ -25,19 +26,29 @@ const NFT_ABI = [
       return null;
     }
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const provider = new ethers.providers.Web3Provider(window.ethereum );
       await provider.send('eth_requestAccounts', []);
       const signer = provider.getSigner();
       const address = await signer.getAddress();
       setAccount(address);
       message.success(`已连接钱包: ${address}`);
 
+      
+      // 从配置中读取红包合约地址
+      const contractAddress = process.env.REACT_APP_NFT_CONTRACT_ADDRESS;
+      console.log(contractAddress,'contractAddress')
+      // 打印当前网络
+      const network = await provider.getNetwork();
+      console.log(network); // 
+      
       // 获取 NFT 平衡
       const nftContract = new ethers.Contract(
         process.env.REACT_APP_NFT_CONTRACT_ADDRESS,
         NFT_ABI,
         provider
       );
+
+      
       const balance = await nftContract.balanceOf(address);
       setNftBalance(balance.toNumber());
 
@@ -48,10 +59,28 @@ const NFT_ABI = [
     }
   };
 
-  // 初始化 XMTP 客户端
+  // 初始化 XMTP 客户端（已按可行方案：手动封装 signer，使其符合 XMTP identity 接口）
   const initXmtpClient = async (signer) => {
     try {
-      const client = await Client.create(signer, { env: 'production' }); // 调整 env 如需要
+      // 注意：返回的 getIdentifier 必须是一个对象（struct），不能是纯字符串
+      const wrappedIdentity = {
+        type: 'EOA',
+        getIdentifier: async () => {
+          const addr = await signer.getAddress();
+          return {
+            identifier: addr.toLowerCase(),
+            identifierKind: 'Ethereum',
+          };
+        },
+        // SDK 期望 signMessage 返回 Uint8Array
+        signMessage: async (message) => {
+          // ethers.Signer.signMessage 支持 string 或 Uint8Array
+          const sigHex = await signer.signMessage(message);
+          return ethers.utils.arrayify(sigHex);
+        },
+      };
+
+      const client = await Client.create(wrappedIdentity, { env: 'production' }); // 调整 env 如需要
       setXmtpClient(client);
       return client;
     } catch (error) {
@@ -60,67 +89,154 @@ const NFT_ABI = [
     }
   };
 
-  // 处理加入群组
-  const handleJoin = async () => {
-    if (!account) {
-      message.warning('请先连接 MetaMask');
+ // 处理加入群组 — 多策略尝试获取 inboxId（兼容不同 SDK 版本）
+const handleJoin = async () => {
+  if (!account) {
+    message.warning('请先连接 MetaMask');
+    return;
+  }
+
+  if (!groupId) {
+    message.error('无效的群组');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    // 1) NFT 检查（保持不变）
+    const nftContract = new ethers.Contract(
+      process.env.REACT_APP_NFT_CONTRACT_ADDRESS,
+      NFT_ABI,
+      provider
+    );
+    const balance = await nftContract.balanceOf(account);
+    if (balance.eq(0)) {
+      message.error('您没有 NFT，不能入群');
       return;
     }
-   /* if (!groupId || !token) {
-      message.error('无效的邀请链接');
-      return;
-    }*/
-    setLoading(true);
 
+    // 2) 初始化 XMTP 客户端（你项目里的封装）
+    const client = await initXmtpClient(signer);
+    if (!client) {
+      message.error('XMTP 客户端初始化失败');
+      return;
+    }
+
+    // 3) 多策略获取 inboxId
+    let inboxId;
+
+    // helper: 清理地址（裸 hex、小写）——用于 newDm 回退
+    const cleanAddress = (addr) => addr.replace(/^0x/i, '').toLowerCase();
+
+    // Strategy A: 常见属性 client.address
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const client = await initXmtpClient(signer);
-      if (!client) return;
-
-     //检查当前账户是否有NFT
-      // 实例化 NFT 合约,从配置中读取NFT地址**需确认
-      const nftContract = new ethers.Contract(
-        process.env.REACT_APP_NFT_CONTRACT_ADDRESS,
-        NFT_ABI,
-        provider
-      );
-
-      // 获取用户拥有的 NFT 数量（使用状态，如果已设置）
-      if (nftBalance === 0) {
-        message.error('您没有 NFT 不能入群');
-        return;
+      if (client.address) {
+        inboxId = client.address;
+        console.log('inboxId from client.address:', inboxId);
       }
-/*
-      // 步骤1: 获取 nonce
-      const nonceRes = await fetch(`/api/invite/nonce?token=${token}`);
-      const { nonce } = await nonceRes.json();
-      if (!nonce) throw new Error('获取 nonce 失败');
-
-      // 步骤2: 签名 nonce
-      const signature = await signer.signMessage(nonce);
-*/
-      // 步骤3: 获取 inboxId (从 XMTP 客户端)
-      const inboxId = client.address; // 或使用 client.inboxId 如果可用
-
-      // 步骤4: 兑换邀请
-      const redeemRes = await fetch('/api/invite/redeem', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, inboxId, inviterid: account }),
-      });
-      const redeemData = await redeemRes.json();
-      if (redeemData.ok) {
-        message.success('成功加入群组！');
-      } else {
-        throw new Error(redeemData.error || '加入失败');
-      }
-    } catch (error) {
-      message.error('加入群组失败: ' + error.message);
-    } finally {
-      setLoading(false);
+    } catch (e) {
+      console.debug('client.address read failed', e);
     }
-  };
+
+    // Strategy B: getUserIdentity() -> { address }
+    if (!inboxId && typeof client.getUserIdentity === 'function') {
+      try {
+        const identity = await client.getUserIdentity();
+        inboxId = identity && identity.address;
+        console.log('inboxId from client.getUserIdentity():', inboxId);
+      } catch (e) {
+        console.debug('client.getUserIdentity() failed', e);
+      }
+    }
+
+    // Strategy C: getUserAddresses() / getAddresses()
+    if (!inboxId && typeof client.getUserAddresses === 'function') {
+      try {
+        const addrs = await client.getUserAddresses();
+        if (Array.isArray(addrs) && addrs.length) {
+          inboxId = addrs[0];
+          console.log('inboxId from client.getUserAddresses()[0]:', inboxId);
+        }
+      } catch (e) {
+        console.debug('client.getUserAddresses() failed', e);
+      }
+    }
+
+    if (!inboxId && typeof client.getAddresses === 'function') {
+      try {
+        const addrs = await client.getAddresses();
+        if (Array.isArray(addrs) && addrs.length) {
+          inboxId = addrs[0];
+          console.log('inboxId from client.getAddresses()[0]:', inboxId);
+        }
+      } catch (e) {
+        console.debug('client.getAddresses() failed', e);
+      }
+    }
+
+    // Strategy D: client.inboxId
+    if (!inboxId && client.inboxId) {
+      try {
+        inboxId = client.inboxId;
+        console.log('inboxId from client.inboxId:', inboxId);
+      } catch (e) {
+        console.debug('client.inboxId read failed', e);
+      }
+    }
+
+    // Strategy E (fallback): 通过 newDm/self-DM 触发/获取 inboxId
+    if (!inboxId) {
+      try {
+        const addrForDm = cleanAddress(account);
+        const possibleDm =
+          (client.conversations && client.conversations.newDm && await client.conversations.newDm(addrForDm)) ||
+          (client.conversations && client.conversations.newDm && await client.conversations.newDm(account));
+        inboxId = possibleDm && possibleDm.id;
+        console.log('inboxId from newDm fallback:', inboxId);
+      } catch (e) {
+        console.debug('fallback newDm failed (may be hex/format issue):', e);
+      }
+    }
+
+    // 最后检查 inboxId
+    if (!inboxId) {
+      console.error('无法获取 inboxId（所有策略均失败）');
+      message.error('failed to get inboxId — 请确保您的钱包已在 XMTP 注册并重试（或刷新页面）');
+      return;
+    }
+
+    console.log('Submitting redeem request:', {
+    inboxId,
+    groupId,
+    inviterId: searchParams.get('inviterid'),
+    });
+
+    // 4) 调用后端接口加入群
+    console.log('Submitting redeem request', { inboxId, groupId });
+    const redeemRes = await fetch('http://localhost:3001/api/invite/redeem', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inboxId, groupId }),
+    });
+
+    const redeemData = await redeemRes.json();
+    if (redeemData.ok) {
+      message.success('成功加入群组！');
+    } else {
+      throw new Error(redeemData.error || '加入失败');
+    }
+  } catch (error) {
+    console.error('handleJoin error:', error);
+    message.error('加入群组失败: ' + (error && error.message ? error.message : String(error)));
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     connectMetaMask(); // 页面加载时自动尝试连接
@@ -134,7 +250,7 @@ const NFT_ABI = [
       {account ? (
         <>
           <p>当前钱包: {account}</p>
-          <p>您的 NFT 数量: {nftBalance}</p>
+          <p>您的 NFT 等级: {nftBalance}</p>
         </>
       ) : (
         <Button onClick={connectMetaMask}>连接 MetaMask</Button>

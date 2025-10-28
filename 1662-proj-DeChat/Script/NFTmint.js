@@ -25,7 +25,7 @@ const { ethers } = require('ethers');
   const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, wallet);
 
   // ========== 铸造参数 ==========
-  const to = '0x07872604428e5a634f012a56f34d0965b9e12388'; // 接收地址
+  const to = '0xc6303eEDF849831b64df6A0074125f643851a3C7'; // 接收地址
   const tier = 0; // 0=Bronze, 1=Silver, 2=Gold
   const uri = 'https://harlequin-working-snipe-956.mypinata.cloud/ipfs/bafybeicm34eskwxjkivo4lrtyd2ok4vgroov26fkbqs4wwdnzbjgk7zb24/0.json'; // NFT metadata 地址
   // ============================
