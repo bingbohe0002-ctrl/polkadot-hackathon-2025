@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.Python
+env/
+venv/
+.venv/
+
+# Build outputs
+dist/
+build/
+target/
+*.wasm
+*.contract
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Rust
+Cargo.lock
+**/*.rs.bk
+
+# Process IDs
+*.pid
+.backend.pid
+.frontend.pid
+
+# Temporary files
+.temp/
+tmp/
+*.tmp
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.parcel-cache/
+

@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+
+# Cargo
+target/
+Cargo.lock
+
+# Large media files
+*.MP4
+*.mp4
+*.mov
+*.avi
+
