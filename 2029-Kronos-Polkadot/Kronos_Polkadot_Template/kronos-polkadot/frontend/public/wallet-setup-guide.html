@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钱包设置指南 - Kronos DApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #E6007A;
+        }
+        
+        h2 {
+            color: #E6007A;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #555;
+            margin: 20px 0 10px 0;
+            font-size: 1.3em;
+        }
+        
+        .step {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #E6007A;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .danger {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #E6007A;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #c00066;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 0, 122, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        ol, ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #E6007A;
+        }
+        
+        .wallet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .wallet-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #ddd;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .wallet-card:hover {
+            border-color: #E6007A;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .wallet-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #E6007A;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 钱包设置指南</h1>
+        <p class="subtitle">5分钟快速设置，开始使用 Kronos Prediction DApp</p>
+
+        <div class="warning">
+            <strong>⚠️ 您看到这个页面是因为：</strong><br>
+            钱包中没有账户。请按照下面的步骤创建账户。
+        </div>
+
+        <!-- 选择钱包 -->
+        <div class="section">
+            <h2>选择您的钱包</h2>
+            <p>点击下方卡片选择并安装钱包：</p>
+            
+            <div class="wallet-grid">
+                <div class="wallet-card" onclick="window.open('https://polkadot.js.org/extension/', '_blank')">
+                    <div class="wallet-icon">🔴</div>
+                    <h3>Polkadot.js</h3>
+                    <p style="font-size: 0.9em; color: #666;">推荐</p>
+                </div>
+                
+                <div class="wallet-card" onclick="window.open('https://www.okx.com/web3', '_blank')">
+                    <div class="wallet-icon">🟠</div>
+                    <h3>OKX Wallet</h3>
+                    <p style="font-size: 0.9em; color: #666;">多链钱包</p>
+                </div>
+                
+                <div class="wallet-card" onclick="window.open('https://subwallet.app/', '_blank')">
+                    <div class="wallet-icon">🟣</div>
+                    <h3>SubWallet</h3>
+                    <p style="font-size: 0.9em; color: #666;">功能强大</p>
+                </div>
+                
+                <div class="wallet-card" onclick="window.open('https://talisman.xyz/', '_blank')">
+                    <div class="wallet-icon">🌟</div>
+                    <h3>Talisman</h3>
+                    <p style="font-size: 0.9em; color: #666;">美观易用</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Polkadot.js 详细教程 -->
+        <div class="section">
+            <h2>📱 Polkadot.js Extension 设置教程</h2>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>安装扩展</strong>
+                <ul>
+                    <li>访问：<code>https://polkadot.js.org/extension/</code></li>
+                    <li>点击"Download for Chrome/Edge/Firefox"</li>
+                    <li>在商店中点击"添加"</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>打开扩展</strong>
+                <ul>
+                    <li>点击浏览器右上角的 Polkadot{.js} 红色图标</li>
+                    <li>如果是首次使用，点击"Understood, let me continue"</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>创建账户</strong>
+                <ul>
+                    <li>点击 <strong>"+"</strong> 按钮</li>
+                    <li>选择 <strong>"Create new account"</strong></li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>备份助记词</strong>
+                <div class="danger" style="margin-top: 10px;">
+                    <strong>🚨 超级重要！</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>会显示 <strong>12 个英文单词</strong></li>
+                        <li><strong>用纸笔抄写下来</strong></li>
+                        <li>保存在安全的地方（如保险箱）</li>
+                        <li>❌ 不要截图</li>
+                        <li>❌ 不要保存在电脑上</li>
+                        <li>❌ 不要告诉任何人</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>设置账户信息</strong>
+                <ul>
+                    <li><strong>账户名称</strong>：随便取，如"My Kronos"</li>
+                    <li><strong>密码</strong>：设置一个强密码</li>
+                    <li>点击 <strong>"Add the account with the generated seed"</strong></li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <strong>✅ 账户创建成功！</strong>
+                <p style="margin-top: 10px;">现在您可以看到账户列表中有一个新账户了。</p>
+            </div>
+        </div>
+
+        <!-- 连接到 Kronos -->
+        <div class="section">
+            <h2>🔗 连接到 Kronos DApp</h2>
+            
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>返回 Kronos DApp</strong>
+                <p style="margin-top: 10px;">
+                    <a href="http://localhost:3000" class="btn">打开 Kronos DApp</a>
+                </p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>点击"Connect Wallet"按钮</strong>
+                <ul>
+                    <li>在页面右上角找到"Connect Wallet"</li>
+                    <li>点击按钮</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>选择钱包</strong>
+                <ul>
+                    <li>会弹出钱包选择对话框</li>
+                    <li>选择您刚才安装的钱包（如 Polkadot.js）</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>授权连接</strong>
+                <ul>
+                    <li>钱包扩展会弹出授权窗口</li>
+                    <li>点击"Yes, allow this application access"</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>选择账户</strong>
+                <ul>
+                    <li>如果有多个账户，选择要使用的账户</li>
+                    <li>点击确认</li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <strong>🎉 连接成功！</strong>
+                <p style="margin-top: 10px;">现在您可以开始使用 Kronos 进行加密货币价格预测了！</p>
+            </div>
+        </div>
+
+        <!-- OKX Wallet 教程 -->
+        <div class="section">
+            <h2>🟠 OKX Wallet 快速设置</h2>
+            
+            <p><strong>为什么选择 OKX Wallet？</strong></p>
+            <ul>
+                <li>✅ 同时支持 Polkadot 和以太坊</li>
+                <li>✅ 中文界面，使用友好</li>
+                <li>✅ 功能丰富（交易、理财等）</li>
+            </ul>
+
+            <h3>快速步骤：</h3>
+            <ol>
+                <li>访问：<code>https://www.okx.com/web3</code></li>
+                <li>下载并安装浏览器扩展</li>
+                <li>创建钱包并<strong>备份助记词</strong></li>
+                <li>点击顶部网络，选择"Polkadot"或"Westend"</li>
+                <li>返回 Kronos，连接 OKX Wallet</li>
+            </ol>
+
+            <a href="https://www.okx.com/web3" target="_blank" class="btn">安装 OKX Wallet</a>
+        </div>
+
+        <!-- MetaMask 说明 -->
+        <div class="section">
+            <h2>🦊 关于 MetaMask</h2>
+            
+            <div class="warning">
+                <strong>⚠️ 重要提示：</strong>
+                <p style="margin-top: 10px;">
+                    MetaMask 是以太坊钱包，<strong>不直接支持 Polkadot</strong>。
+                </p>
+            </div>
+
+            <h3>如果您想使用 MetaMask：</h3>
+            
+            <p><strong>选项 A：安装 Polkadot Snap</strong></p>
+            <ol>
+                <li>访问：<code>https://polkagate.xyz/snap</code></li>
+                <li>在 MetaMask 中安装 Polkadot Snap</li>
+                <li>创建 Polkadot 账户</li>
+                <li>返回 Kronos 连接</li>
+            </ol>
+
+            <p style="margin-top: 20px;"><strong>选项 B：使用多链钱包（推荐）</strong></p>
+            <p>安装 <strong>OKX Wallet</strong> 或 <strong>Talisman</strong>，它们同时支持以太坊和 Polkadot。</p>
+            
+            <div style="margin-top: 15px;">
+                <a href="https://polkagate.xyz/snap" target="_blank" class="btn btn-secondary">Polkadot Snap</a>
+                <a href="https://www.okx.com/web3" target="_blank" class="btn">OKX Wallet</a>
+            </div>
+        </div>
+
+        <!-- 安全提示 -->
+        <div class="section">
+            <h2>🔒 安全提示</h2>
+            
+            <div class="danger">
+                <strong>🚨 绝对不要做的事：</strong>
+                <ul style="margin-top: 10px;">
+                    <li>❌ 将助记词告诉任何人</li>
+                    <li>❌ 截图保存助记词</li>
+                    <li>❌ 在可疑网站输入助记词</li>
+                    <li>❌ 使用弱密码</li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <strong>✅ 必须做的事：</strong>
+                <ul style="margin-top: 10px;">
+                    <li>✅ 用纸笔抄写助记词</li>
+                    <li>✅ 保存在安全的地方</li>
+                    <li>✅ 使用强密码</li>
+                    <li>✅ 小额测试</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 常见问题 -->
+        <div class="section">
+            <h2>❓ 常见问题</h2>
+            
+            <h3>Q: 我创建了账户，但 DApp 还是找不到？</h3>
+            <p><strong>A:</strong> 请尝试：</p>
+            <ul>
+                <li>刷新页面（按 F5）</li>
+                <li>确保钱包扩展已启用</li>
+                <li>重新点击"Connect Wallet"</li>
+            </ul>
+
+            <h3>Q: 我可以使用多个钱包吗？</h3>
+            <p><strong>A:</strong> 可以！您可以安装多个钱包扩展，在连接时选择要使用的钱包。</p>
+
+            <h3>Q: 忘记密码怎么办？</h3>
+            <p><strong>A:</strong> 如果有助记词，可以删除账户后用助记词恢复。如果没有助记词，账户将无法恢复！</p>
+
+            <h3>Q: 需要真实的加密货币吗？</h3>
+            <p><strong>A:</strong> 不需要！Kronos 部署在测试网（Westend），使用免费的测试币。</p>
+        </div>
+
+        <!-- 返回按钮 -->
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="http://localhost:3000" class="btn" style="font-size: 1.2em; padding: 15px 40px;">
+                返回 Kronos DApp →
+            </a>
+        </div>
+
+        <a href="#" onclick="window.close(); return false;" class="back-link">← 关闭此窗口</a>
+    </div>
+
+    <script>
+        // 自动检测钱包
+        window.addEventListener('load', async () => {
+            try {
+                // 检测 Polkadot.js
+                if (typeof window.injectedWeb3 !== 'undefined') {
+                    console.log('Detected wallets:', Object.keys(window.injectedWeb3));
+                }
+            } catch (e) {
+                console.log('No wallets detected');
+            }
+        });
+    </script>
+</body>
+</html>
+

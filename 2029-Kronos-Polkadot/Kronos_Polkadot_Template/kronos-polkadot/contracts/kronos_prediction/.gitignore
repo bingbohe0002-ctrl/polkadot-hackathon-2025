@@ -1,0 +1,9 @@
+# Rust
+target/
+Cargo.lock
+
+# Ink artifacts
+*.contract
+*.wasm
+metadata.json
+

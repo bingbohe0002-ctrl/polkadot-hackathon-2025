@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # 后端服务 (Node.js + Python)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kronos-backend
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    environment:
+      # Node.js 配置
+      - PORT=5000
+      - NODE_ENV=production
+      - WS_PROVIDER=${WS_PROVIDER:-wss://westend-rpc.polkadot.io}
+      
+      # Python 服务配置
+      - PYTHON_SERVICE_PORT=5001
+      - KRONOS_MODEL=${KRONOS_MODEL:-NeoQuasar/Kronos-small}
+      - KRONOS_TOKENIZER=${KRONOS_TOKENIZER:-NeoQuasar/Kronos-Tokenizer-base}
+      - DEVICE=${DEVICE:-cpu}
+      
+      # 币安 API（如果需要 API Key）
+      - BINANCE_API_KEY=${BINANCE_API_KEY:-}
+      - BINANCE_SECRET_KEY=${BINANCE_SECRET_KEY:-}
+    volumes:
+      # 挂载模型缓存目录（避免重复下载）
+      - model-cache:/root/.cache/huggingface
+      # 日志目录
+      - ./backend/logs:/app/logs
+    networks:
+      - kronos-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # 前端服务 (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kronos-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_BACKEND_URL=http://localhost:5000
+      - VITE_WS_PROVIDER=${WS_PROVIDER:-wss://westend-rpc.polkadot.io}
+      - VITE_CONTRACT_ADDRESS=${CONTRACT_ADDRESS:-}
+    depends_on:
+      - backend
+    networks:
+      - kronos-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+networks:
+  kronos-network:
+    driver: bridge
+
+volumes:
+  model-cache:
+    driver: local
+
