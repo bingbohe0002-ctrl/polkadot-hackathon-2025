@@ -8,23 +8,34 @@
     "build": "vite build",
     "preview": "vite preview",
     "compile": "node scripts/compile.js",
-    "deploy": "node scripts/deploy.js"
+    "deploy": "node scripts/deploy.js",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "ai-service": "node server/ai-service.js",
+    "dev:full": "concurrently \"npm run dev\" \"npm run ai-service\""
   },
   "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.1.7",
+    "@tanstack/react-query": "^5.59.0",
+    "axios": "^1.6.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.6.0",
     "viem": "^2.21.45",
-    "wagmi": "^2.12.25",
-    "@tanstack/react-query": "^5.59.0",
-    "@rainbow-me/rainbowkit": "^2.1.7"
+    "wagmi": "^2.12.25"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.3",
-    "vite": "^5.4.10",
+    "@parity/resolc": "^0.2.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@parity/resolc": "^0.2.0",
-    "typescript": "^5.6.3"
+    "@vitejs/plugin-react": "^4.3.3",
+    "@vitest/ui": "^4.0.6",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
   }
 }
-

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
+import toast from 'react-hot-toast';
 import { useContract } from '../hooks/useContract';
 import MessageItem from './MessageItem';
 import UserList from './UserList';
+import AIAssistant from './AIAssistant';
 import '../styles/ChatRoom.css';
 
-function ChatRoom({ onOpenPrivateChat }) {
+function ChatRoom({ onOpenPrivateChat, onOpenGroupList, onOpenChannelList, onOpenDiscover }) {
   const { address } = useAccount();
   const { sendMessage, getLatestMessages, getTotalMessages, listenToMessages } = useContract();
   
@@ -86,9 +88,9 @@ function ChatRoom({ onOpenPrivateChat }) {
     e.preventDefault();
     
     if (!newMessage.trim()) return;
-    
+
     if (newMessage.length > 1000) {
-      alert('Message is too long (max 1000 characters)');
+      toast.error('Message is too long (max 1000 characters)');
       return;
     }
 
@@ -105,7 +107,7 @@ function ChatRoom({ onOpenPrivateChat }) {
       }, 2000);
     } catch (error) {
       console.error('Failed to send message:', error);
-      alert('Failed to send message. Please try again.');
+      toast.error('Failed to send message. Please try again.');
     } finally {
       setIsSending(false);
     }
@@ -127,13 +129,36 @@ function ChatRoom({ onOpenPrivateChat }) {
             {totalMessages} message{totalMessages !== 1 ? 's' : ''} on-chain
           </span>
         </div>
-        <button 
-          className="users-toggle-btn"
-          onClick={() => setShowUserList(!showUserList)}
-        >
-          <span className="icon">👥</span>
-          {showUserList ? 'Hide' : 'Show'} Users
-        </button>
+        <div className="chat-header-actions">
+          <button
+            className="discover-btn"
+            onClick={onOpenDiscover}
+          >
+            <span className="icon">🔍</span>
+            Discover
+          </button>
+          <button
+            className="groups-btn"
+            onClick={onOpenGroupList}
+          >
+            <span className="icon">👥</span>
+            My Groups
+          </button>
+          <button
+            className="channels-btn"
+            onClick={onOpenChannelList}
+          >
+            <span className="icon">📢</span>
+            My Channels
+          </button>
+          <button
+            className="users-toggle-btn"
+            onClick={() => setShowUserList(!showUserList)}
+          >
+            <span className="icon">👤</span>
+            {showUserList ? 'Hide' : 'Show'} Users
+          </button>
+        </div>
       </div>
 
       <div className="chat-container">
@@ -180,6 +205,14 @@ function ChatRoom({ onOpenPrivateChat }) {
                 <span className="char-count">
                   {newMessage.length}/1000
                 </span>
+                <AIAssistant
+                  inputText={newMessage}
+                  onApplyText={setNewMessage}
+                  messages={messages}
+                  onSummaryGenerated={(summary) => {
+                    toast.success('Summary generated!');
+                  }}
+                />
                 <button
                   type="submit"
                   className="send-btn"

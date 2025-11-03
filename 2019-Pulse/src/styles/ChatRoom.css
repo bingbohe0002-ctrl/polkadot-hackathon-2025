@@ -38,6 +38,15 @@
   color: var(--primary-color);
 }
 
+.chat-header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.discover-btn,
+.groups-btn,
+.channels-btn,
 .users-toggle-btn {
   padding: 10px 20px;
   background: rgba(255, 255, 255, 0.05);
@@ -48,13 +57,20 @@
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
+.discover-btn:hover,
+.groups-btn:hover,
+.channels-btn:hover,
 .users-toggle-btn:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: var(--primary-color);
 }
 
+.discover-btn .icon,
+.groups-btn .icon,
+.channels-btn .icon,
 .users-toggle-btn .icon {
   font-size: 1.2rem;
 }
@@ -158,6 +174,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  gap: 10px;
 }
 
 .char-count {
@@ -219,8 +237,17 @@
     padding: 15px;
   }
 
-  .users-toggle-btn {
+  .chat-header-actions {
     width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .discover-btn,
+  .groups-btn,
+  .channels-btn,
+  .users-toggle-btn {
+    flex: 1;
+    min-width: 120px;
     justify-content: center;
   }
 
