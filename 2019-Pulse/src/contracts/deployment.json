@@ -1,9 +1,62 @@
 {
-  "contractName": "PulseChat",
-  "address": "0x96f82b552b1c0592f937b4edae9e9815bb20133c",
-  "network": "Polkadot Hub TestNet",
-  "chainId": 420420422,
-  "deployedAt": "2025-10-26T04:52:41.966Z",
-  "transactionHash": "0xd05bc285868b0aaf309752ad0fcecf6caf10f29b5e131744d88a3509906fab6f",
-  "blockNumber": "1909261"
+  "PulseChat": {
+    "contractName": "PulseChat",
+    "address": "0xcb8b52911f4552e08e9a42d151904504924d091d",
+    "network": "Polkadot Hub TestNet",
+    "chainId": 420420422,
+    "deployedAt": "2025-11-03T08:08:31.771Z",
+    "transactionHash": "0x62eb35ffba2422f94d8fb3c521cf39dc5c853b766c828340b7b0b14d2902897d",
+    "blockNumber": "2016725",
+    "gasUsed": "69041344840"
+  },
+  "PulseGroups": {
+    "contractName": "PulseGroups",
+    "address": "0x165c72749c1f6b736d6ee55acf53711129cec183",
+    "network": "Polkadot Hub TestNet",
+    "chainId": 420420422,
+    "deployedAt": "2025-11-03T08:08:38.403Z",
+    "transactionHash": "0x4687b14dc6218150acc235f0ac7194fb280d301f35fbf3bdd3513d3f1babfffc",
+    "blockNumber": "2016726",
+    "gasUsed": "58084344840"
+  },
+  "PulseChannels": {
+    "contractName": "PulseChannels",
+    "address": "0x9e45bb040ffcfbaf6f6b92e7999bd521eff5aa81",
+    "network": "Polkadot Hub TestNet",
+    "chainId": 420420422,
+    "deployedAt": "2025-11-03T08:08:51.376Z",
+    "transactionHash": "0xe80107a50a79a4dcb13c292beca553d985382e92bf0ef6f0bb8ad8a8a0b28821",
+    "blockNumber": "2016728",
+    "gasUsed": "58005344840"
+  },
+  "PulseFriends": {
+    "contractName": "PulseFriends",
+    "address": "0x9801a90b7d220db3be6e09c383c9dc5a08b1641e",
+    "network": "Polkadot Hub TestNet",
+    "chainId": 420420422,
+    "deployedAt": "2025-11-03T08:09:03.220Z",
+    "transactionHash": "0xc7d4e906282a2a326444e41f705e00e61d6b0708efbe8d3c2e2f0d3c8035f9e2",
+    "blockNumber": "2016730",
+    "gasUsed": "18397344840"
+  },
+  "PulsePrivateMessages": {
+    "contractName": "PulsePrivateMessages",
+    "address": "0xffc1e40080f51ba4e673346cc39055b61ef0ca7b",
+    "network": "Polkadot Hub TestNet",
+    "chainId": 420420422,
+    "deployedAt": "2025-11-03T08:09:07.725Z",
+    "transactionHash": "0x8e4a54db2cc80f406236ecfc08af9da9adcbeec164f02ed8ade7b0b7b12df0f6",
+    "blockNumber": "2016731",
+    "gasUsed": "33803344840"
+  },
+  "PulseAI": {
+    "contractName": "PulseAI",
+    "address": "0x86bdcdf977fd90a2ed5cb0766c04dac81a5ba8f3",
+    "network": "Polkadot Hub TestNet",
+    "chainId": 420420422,
+    "deployedAt": "2025-11-03T08:09:13.975Z",
+    "transactionHash": "0x51fca0d4b1fb19bcf54101a4469f8fdc760850795d45829c1be0b9a0381c6d87",
+    "blockNumber": "2016732",
+    "gasUsed": "20893948600"
+  }
 }

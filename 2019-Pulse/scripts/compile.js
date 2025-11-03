@@ -56,8 +56,23 @@ const compileContract = async (solidityFilePath, outputDir) => {
   }
 };
 
-const solidityFilePath = join(__dirname, '../contracts/PulseChat.sol');
 const outputDir = join(__dirname, '../src/contracts');
 
-compileContract(solidityFilePath, outputDir);
+// Compile all contracts
+const contracts = [
+  'PulseChat.sol',
+  'PulseGroups.sol',
+  'PulseChannels.sol',
+  'PulseFriends.sol',
+  'PulsePrivateMessages.sol',
+  'PulseAI.sol'
+];
+
+(async () => {
+  for (const contractFile of contracts) {
+    const solidityFilePath = join(__dirname, '../contracts', contractFile);
+    await compileContract(solidityFilePath, outputDir);
+    console.log(''); // Add spacing between contracts
+  }
+})();
 

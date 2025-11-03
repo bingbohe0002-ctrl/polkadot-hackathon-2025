@@ -101,8 +101,8 @@ const deployContract = async (contractName, privateKey) => {
       mkdirSync(deploymentDir, { recursive: true });
     }
 
-    const deploymentFile = join(deploymentDir, 'deployment.json');
-    const deploymentInfo = {
+    // Return deployment info instead of saving to single file
+    return {
       contractName,
       address: contractAddress,
       network: 'Polkadot Hub TestNet',
@@ -110,12 +110,8 @@ const deployContract = async (contractName, privateKey) => {
       deployedAt: new Date().toISOString(),
       transactionHash: hash,
       blockNumber: receipt.blockNumber.toString(),
+      gasUsed: receipt.gasUsed.toString(),
     };
-
-    writeFileSync(deploymentFile, JSON.stringify(deploymentInfo, null, 2), 'utf8');
-    console.log(`✓ Deployment info saved to ${deploymentFile}`);
-
-    return contractAddress;
   } catch (error) {
     console.error(`\n✗ Failed to deploy contract ${contractName}:`, error);
     process.exit(1);
@@ -136,7 +132,29 @@ const main = async () => {
     process.exit(1);
   }
 
-  await deployContract('PulseChat', privateKey);
+  // Deploy all contracts
+  const contracts = ['PulseChat', 'PulseGroups', 'PulseChannels', 'PulseFriends', 'PulsePrivateMessages', 'PulseAI'];
+  const deployments = {};
+
+  for (const contractName of contracts) {
+    const deploymentInfo = await deployContract(contractName, privateKey);
+    deployments[contractName] = deploymentInfo;
+  }
+
+  // Save all deployment info to a single file
+  const deploymentDir = join(__dirname, '../src/contracts');
+  if (!existsSync(deploymentDir)) {
+    mkdirSync(deploymentDir, { recursive: true });
+  }
+
+  const deploymentFile = join(deploymentDir, 'deployment.json');
+  writeFileSync(deploymentFile, JSON.stringify(deployments, null, 2), 'utf8');
+  console.log(`\n✓ All deployment info saved to ${deploymentFile}`);
+
+  console.log('\n📋 Deployment Summary:');
+  for (const [name, info] of Object.entries(deployments)) {
+    console.log(`  ${name}: ${info.address}`);
+  }
 };
 
 main();
