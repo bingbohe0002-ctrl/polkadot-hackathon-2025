@@ -4,19 +4,20 @@
 const { Keyring } = require('@polkadot/keyring');
 const { cryptoWaitReady } = require('@polkadot/util-crypto');
 require('dotenv').config({ path: '.env.developer' });
+const { maskPrivateKey, maskMnemonic } = require('./utils/mask-sensitive');
 
 async function finalKeyDerivation() {
   console.log("🔑 Final Substrate key derivation...\n");
 
   await cryptoWaitReady();
 
-  // 从环境变量读取助记词
+  // Read mnemonics from environment variables
   const mnemonics = {
     agent: process.env.AGENT_MNEMONIC, 
     validator: process.env.VALIDATOR_MNEMONIC
   };
 
-  // 检查助记词是否存在
+  // Check if mnemonics exist
   for (const [role, mnemonic] of Object.entries(mnemonics)) {
     if (!mnemonic) {
       console.log(`❌ Missing ${role.toUpperCase()}_MNEMONIC in environment variables`);
@@ -32,7 +33,7 @@ async function finalKeyDerivation() {
       const keyring = new Keyring({ type: 'sr25519' });
       const keyPair = keyring.addFromMnemonic(mnemonic);
       
-      // 获取私钥的正确方法
+      // Correct method to get private key
       const privateKey = keyPair.publicKey;
       const privateKeyHex = `0x${Buffer.from(keyPair.publicKey).toString('hex')}`;
       
@@ -44,8 +45,9 @@ async function finalKeyDerivation() {
 
       console.log(`✅ ${role.toUpperCase()}:`);
       console.log(`   Address: ${keyPair.address}`);
-      console.log(`   Private Key: ${privateKeyHex}`);
+      console.log(`   Private Key: ${maskPrivateKey(privateKeyHex)}`);
       console.log(`   Private Key Length: ${privateKeyHex.length}\n`);
+      console.log(`   Mnemonic: ${maskMnemonic(mnemonic)}\n`);
 
     } catch (error) {
       console.log(`❌ Failed to derive key for ${role}:`, error.message);

@@ -1,10 +1,26 @@
 // ============================================================================
 // src/types.ts - Unified Type Definitions
 // ============================================================================
+/**
+ * This file contains all TypeScript type definitions for the Life++ PoC project.
+ * It provides type safety and documentation for interfaces used across the system.
+ */
 
 // ============================================================================
 // Core Cognitive Event Types
 // ============================================================================
+/**
+ * CognitiveEvent represents a complete cognitive process executed by an AI agent.
+ * It contains the input, reasoning trace, output, and metadata for a single cognitive action.
+ * 
+ * @property agentId - Unique identifier for the AI agent executing the cognitive action
+ * @property input - The input data that triggered the cognitive process
+ * @property reasoning - Complete reasoning trace showing how the agent arrived at the output
+ * @property output - The result or decision produced by the cognitive process
+ * @property modelMeta - Metadata about the AI model used (name, version, provider)
+ * @property sensorData - Optional sensor telemetry data from physical devices
+ * @property signature - Optional cryptographic signature for authenticity verification
+ */
 export interface CognitiveEvent {
   agentId: string;
   input: any;

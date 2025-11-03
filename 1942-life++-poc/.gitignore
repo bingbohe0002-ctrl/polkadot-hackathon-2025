@@ -1,20 +1,22 @@
 # ============================================================================
 # Life++ PoC - Git Ignore File
 # ============================================================================
+# This file specifies intentionally untracked files that Git should ignore.
+# Patterns are relative to the repository root.
 
-# Environment files (包含私钥，绝对不能提交)
+# Environment files (contains private keys, must never be committed)
 .env
 .env.local
 .env.testnet
 .env.developer
 .env.*.local
 
-# 注意：.env.passetHub 已从忽略列表移除，可以安全提交
-# 该文件包含：
-# - 测试网配置（安全）
-# - 合约地址（公开）
-# - DEPLOYER_PRIVATE_KEY（Hardhat默认测试私钥，公开可用）
-# - PRIVATE_KEY占位符（需要评委配置自己的测试钱包）
+# Note: .env.passetHub has been removed from ignore list and can be safely committed
+# This file contains:
+# - Testnet configuration (safe)
+# - Contract addresses (public)
+# - DEPLOYER_PRIVATE_KEY (Hardhat default test private key, publicly available)
+# - PRIVATE_KEY placeholder (reviewers need to configure their own test wallet)
 
 # Node modules
 node_modules/
@@ -188,11 +190,14 @@ temp/
 ehthumbs.db
 Thumbs.db
 
-# Account files (包含私钥，绝对不能提交)
+# Account files (contains private keys, must never be committed)
 account/
 account/*.json
 
-# Deployment files (包含敏感信息)】
+# Developer setup scripts (contains mnemonics and private keys)
+scripts/create-developer-env.js
+
+# Deployment files (contains sensitive information)
 deployments/*.txt
 
 # Backup files

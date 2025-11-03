@@ -1,8 +1,37 @@
 // ============================================================================
 // src/robot-sdk/RobotSDK.ts - Robot/Digital Twin SDK
 // ============================================================================
+/**
+ * Robot SDK for Life++ PoC
+ * 
+ * This SDK enables robots, digital twins, and AI agents to submit cognitive proofs
+ * to the Life++ system. It provides a simplified interface for:
+ * - Capturing sensor data
+ * - Building reasoning traces
+ * - Submitting cognitive events
+ * - Executing cognitive actions with full proof chains
+ * 
+ * Usage Example:
+ * ```typescript
+ * const sdk = new RobotSDK({
+ *   agentId: 'robot-001',
+ *   ahinEndpoint: 'http://localhost:3000',
+ *   privateKey: '0x...'
+ * });
+ * 
+ * const result = await sdk.executeWithProof({
+ *   input: { command: 'navigate', target: [100, 200] },
+ *   cognitiveFunction: async (input) => {
+ *     // Your cognitive function implementation here
+ *     return { steps: [], output: {} };
+ *   },
+ *   modelMeta: { modelName: 'GPT-4', version: '1.0', provider: 'OpenAI' }
+ * });
+ * ```
+ */
+
 import axios from 'axios';
-import { createSign } from 'crypto';
+import { createSign, createHash } from 'crypto';
 import { 
   CognitiveEvent, 
   ReasoningTrace, 
@@ -11,11 +40,25 @@ import {
   RobotSDKConfig 
 } from '../types';
 
+/**
+ * RobotSDK Class
+ * 
+ * Provides high-level API for robots and digital twins to interact with the Life++ system.
+ * Handles proof creation, evidence bundling, and submission to the AHIN Indexer.
+ */
 export class RobotSDK {
-  private agentId: string;
-  private ahinEndpoint: string;
-  private privateKey: string;
+  private agentId: string;        // Unique identifier for this robot/agent
+  private ahinEndpoint: string;   // AHIN Indexer API endpoint URL
+  private privateKey: string;      // Private key for signing cognitive events
 
+  /**
+   * Initialize Robot SDK
+   * 
+   * @param config - SDK configuration
+   * @param config.agentId - Unique identifier for this robot/agent instance
+   * @param config.ahinEndpoint - Base URL of the AHIN Indexer API (e.g., 'http://localhost:3000')
+   * @param config.privateKey - EVM private key for signing cognitive events (must be 0x + 64 hex chars)
+   */
   constructor(config: {
     agentId: string;
     ahinEndpoint: string;
@@ -145,7 +188,7 @@ export class RobotSDK {
    * Hash data
    */
   private hashData(data: any): string {
-    return crypto.createHash('sha256')
+    return createHash('sha256')
       .update(JSON.stringify(data))
       .digest('hex');
   }

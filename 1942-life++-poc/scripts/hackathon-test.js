@@ -1,7 +1,8 @@
 // ============================================================================
-// scripts/hackathon-test.js - 黑客松评审测试脚本
+// scripts/hackathon-test.js - Hackathon review test script
 // ============================================================================
 const hre = require("hardhat");
+const { maskPrivateKey } = require('./utils/mask-sensitive');
 
 async function main() {
   console.log("🧪 Life++ PoC - Hackathon Review Test Script\n");
@@ -10,31 +11,31 @@ async function main() {
   console.log("=" + "=".repeat(59) + "\n");
   
   // ========================================================================
-  // 严格验证黑客松要求
+  // Strictly verify hackathon requirements
   // ========================================================================
-  console.log("🔍 验证黑客松要求...");
+  console.log("🔍 Verifying hackathon requirements...");
   
-  // 1. 验证私钥配置
+  // 1. Verify private key configuration
   if (!process.env.PRIVATE_KEY) {
-    throw new Error("❌ 致命错误：未配置评审钱包私钥！请运行: source .env.passetHub");
+    throw new Error("❌ Fatal error: Reviewer wallet private key not configured! Please run: source .env.passetHub");
   }
   
-  // 2. 验证私钥格式
+  // 2. Verify private key format
   if (!process.env.PRIVATE_KEY.startsWith('0x') || process.env.PRIVATE_KEY.length !== 66) {
-    throw new Error("❌ 私钥格式错误！必须是 EVM 格式私钥 (0x + 64位十六进制)");
+    throw new Error("❌ Private key format error! Must be EVM format private key (0x + 64 hexadecimal characters)");
   }
   
-  // 3. 验证网络连接
+  // 3. Verify network connection
   const provider = hre.ethers.provider;
   const network = await provider.getNetwork();
   if (network.chainId !== 420420422n) {
-    throw new Error("❌ 网络错误！必须连接到 PassetHub 测试网 (Chain ID: 420420422)");
+    throw new Error("❌ Network error! Must be connected to PassetHub testnet (Chain ID: 420420422)");
   }
   
-  console.log("✅ 黑客松要求验证通过");
+  console.log(`✅ Hackathon requirements verification passed (Private key: ${maskPrivateKey(process.env.PRIVATE_KEY)})`);
   console.log(`📡 Network: ${hre.network.name} (Chain ID: ${network.chainId})`);
   
-  // 加载部署的合约地址
+  // Load deployed contract addresses
   const fs = require('fs');
   const deploymentPath = `./deployments/passetHub-deployment.json`;
   
@@ -53,26 +54,26 @@ async function main() {
   console.log(`   Ledger:          ${deployment.contracts.Ledger}`);
   console.log(`   Legal Wrapper:   ${deployment.contracts.LegalWrapper}`);
   
-  // 4. 验证钱包余额
+  // 4. Verify wallet balance
   const [tester] = await hre.ethers.getSigners();
   const balance = await provider.getBalance(tester.address);
   
-  console.log(`\n👤 评审钱包: ${tester.address}`);
-  console.log(`💰 钱包余额: ${hre.ethers.formatEther(balance)} ETH`);
+  console.log(`\n👤 Reviewer wallet: ${tester.address}`);
+  console.log(`💰 Wallet balance: ${hre.ethers.formatEther(balance)} ETH`);
   
   if (balance === 0n) {
-    throw new Error("❌ 钱包余额为 0！请获取 PassetHub 测试网 ETH");
+    throw new Error("❌ Wallet balance is 0! Please get PassetHub testnet ETH");
   }
   
   if (balance < hre.ethers.parseEther("0.01")) {
-    throw new Error("❌ 钱包余额不足！请获取更多 PassetHub 测试网 ETH");
+    throw new Error("❌ Insufficient wallet balance! Please get more PassetHub testnet ETH");
   }
   
-  console.log("✅ 钱包验证通过");
+  console.log("✅ Wallet verification passed");
   
-  // 记录测试前余额
+  // Record pre-test balance
   const balanceBefore = balance;
-  console.log(`📊 测试前余额: ${hre.ethers.formatEther(balanceBefore)} ETH`);
+  console.log(`📊 Pre-test balance: ${hre.ethers.formatEther(balanceBefore)} ETH`);
   
   // ========================================================================
   // TEST 1: CATK Token Functions
@@ -101,20 +102,20 @@ async function main() {
     const testerBalance = await catk.balanceOf(tester.address);
     console.log(`✅ balanceOf(${tester.address}): ${hre.ethers.formatEther(testerBalance)} CATK`);
     
-    // Test: transfer() - 强制真实交易
+    // Test: transfer() - Force real transaction
     if (testerBalance > 0) {
       const transferAmount = hre.ethers.parseEther("1");
       if (testerBalance >= transferAmount) {
-        console.log("📝 执行真实转账交易...");
+        console.log("📝 Executing real transfer transaction...");
         const transferTx = await catk.transfer(tester.address, transferAmount);
         const receipt = await transferTx.wait();
         
         if (!receipt.status) {
-          throw new Error(`❌ 转账交易失败！交易哈希: ${receipt.transactionHash}`);
+          throw new Error(`❌ Transfer transaction failed! Transaction hash: ${receipt.transactionHash}`);
         }
         
-        console.log(`✅ transfer(): 真实转账成功！交易哈希: ${receipt.transactionHash}`);
-        console.log(`   Gas 消耗: ${receipt.gasUsed.toString()} Gas`);
+        console.log(`✅ transfer(): Real transfer successful! Transaction hash: ${receipt.transactionHash}`);
+        console.log(`   Gas used: ${receipt.gasUsed.toString()} Gas`);
       }
     }
     
@@ -159,69 +160,69 @@ async function main() {
         console.log(`   Required: ${hre.ethers.formatEther(stakeAmount)} CATK`);
         console.log(`   Available: ${hre.ethers.formatEther(testerBalance)} CATK`);
         
-        // 自动转账CATK给测试者
-        console.log(`🔄 自动转账CATK给评委钱包...`);
+        // Automatically transfer CATK to tester
+        console.log(`🔄 Automatically transferring CATK to reviewer wallet...`);
         try {
-          const transferAmount = stakeAmount + hre.ethers.parseEther("10"); // 转账110 CATK，确保有足够余额
+          const transferAmount = stakeAmount + hre.ethers.parseEther("10"); // Transfer 110 CATK to ensure sufficient balance
           
-          // 检查DEPLOYER_PRIVATE_KEY配置
+          // Check DEPLOYER_PRIVATE_KEY configuration
           if (!process.env.DEPLOYER_PRIVATE_KEY) {
-            throw new Error("❌ 未配置DEPLOYER_PRIVATE_KEY！这是用于给评委转账CATK的钱包");
+            throw new Error("❌ DEPLOYER_PRIVATE_KEY not configured! This wallet is used to transfer CATK to reviewers");
           }
           
-          // 使用部署者钱包来执行转账（部署者拥有CATK代币）
-          console.log(`💡 使用部署者钱包 (拥有CATK) 给评委钱包转账`);
+          // Use deployer wallet to execute transfer (deployer owns CATK tokens)
+          console.log(`💡 Using deployer wallet (owns CATK) to transfer to reviewer wallet`);
           const deployerWallet = new hre.ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, hre.ethers.provider);
           const deployerCATK = await hre.ethers.getContractAt('CognitiveAssetToken', deployment.contracts.CATK, deployerWallet);
           
-          console.log(`   从: ${deployerWallet.address} (部署者)`);
-          console.log(`   到: ${tester.address} (评委)`);
-          console.log(`   金额: ${hre.ethers.formatEther(transferAmount)} CATK`);
+          console.log(`   From: ${deployerWallet.address} (deployer)`);
+          console.log(`   To: ${tester.address} (reviewer)`);
+          console.log(`   Amount: ${hre.ethers.formatEther(transferAmount)} CATK`);
           
           const transferTx = await deployerCATK.transfer(tester.address, transferAmount);
-          console.log(`📝 执行CATK转账交易...`);
+          console.log(`📝 Executing CATK transfer transaction...`);
           const transferReceipt = await transferTx.wait();
           
           if (transferReceipt.status === 1) {
-            console.log(`✅ CATK转账成功！交易哈希: ${transferTx.hash}`);
-            console.log(`   Gas 消耗: ${transferReceipt.gasUsed} Gas`);
+            console.log(`✅ CATK transfer successful! Transaction hash: ${transferTx.hash}`);
+            console.log(`   Gas used: ${transferReceipt.gasUsed} Gas`);
             
-            // 重新检查余额
+            // Re-check balance
             const newBalance = await catk.balanceOf(tester.address);
-            console.log(`✅ 转账后余额: ${hre.ethers.formatEther(newBalance)} CATK`);
+            console.log(`✅ Balance after transfer: ${hre.ethers.formatEther(newBalance)} CATK`);
             
-            // 添加代币提示
-            console.log(`\n📝 请在钱包中手动添加CATK代币以查看余额:`);
-            console.log(`   1. 在钱包中找到\"添加代币\"功能`);
-            console.log(`   2. 选择网络: Paseo PassetHub TestNet`);
-            console.log(`   3. 输入合约地址: ${deployment.contracts.CATK}`);
-            console.log(`   4. 完成添加后即可看到CATK余额`);
-            console.log(`\n💡 这是测试网络的限制，钱包无法自动检测自定义代币。`);
+            // Token addition prompt
+            console.log(`\n📝 Please manually add CATK token in wallet to view balance:`);
+            console.log(`   1. Find "Add Token" function in wallet`);
+            console.log(`   2. Select network: Paseo PassetHub TestNet`);
+            console.log(`   3. Enter contract address: ${deployment.contracts.CATK}`);
+            console.log(`   4. After adding, CATK balance will be visible`);
+            console.log(`\n💡 This is a testnet limitation, wallets cannot automatically detect custom tokens.`);
           } else {
-            throw new Error("CATK转账交易失败");
+            throw new Error("CATK transfer transaction failed");
           }
         } catch (error) {
-          console.log(`❌ CATK转账失败: ${error.message}`);
+          console.log(`❌ CATK transfer failed: ${error.message}`);
           console.log(`   Skipping registration test...`);
           return;
         }
       }
       
-      // 重新检查余额，确保有足够的CATK
+      // Re-check balance to ensure sufficient CATK
       const finalBalance = await catk.balanceOf(tester.address);
       if (finalBalance >= stakeAmount) {
-        // Test: approve() - 强制真实交易
-        console.log("📝 执行真实授权交易...");
+        // Test: approve() - Force real transaction
+        console.log("📝 Executing real approval transaction...");
         const approveTx = await catk.approve(deployment.contracts.Registry, stakeAmount);
         const approveReceipt = await approveTx.wait();
         
         if (!approveReceipt.status) {
-          throw new Error(`❌ 授权交易失败！交易哈希: ${approveReceipt.transactionHash}`);
+          throw new Error(`❌ Approval transaction failed! Transaction hash: ${approveReceipt.transactionHash}`);
         }
-        console.log(`✅ approve(): 真实授权成功！交易哈希: ${approveReceipt.transactionHash}`);
+        console.log(`✅ approve(): Real approval successful! Transaction hash: ${approveReceipt.transactionHash}`);
         
-        // Test: registerAgent() - 强制真实交易
-        console.log("📝 执行真实代理注册交易...");
+        // Test: registerAgent() - Force real transaction
+        console.log("📝 Executing real agent registration transaction...");
         const agentMetaHash = hre.ethers.id("hackathon-test-agent-v1.0");
         const registerTx = await registry.registerAgent(
           tester.address,
@@ -231,9 +232,9 @@ async function main() {
         const receipt = await registerTx.wait();
         
         if (!receipt.status) {
-          throw new Error(`❌ 代理注册交易失败！交易哈希: ${receipt.transactionHash}`);
+          throw new Error(`❌ Agent registration transaction failed! Transaction hash: ${receipt.transactionHash}`);
         }
-        console.log(`✅ registerAgent(): 真实代理注册成功！交易哈希: ${receipt.transactionHash}`);
+        console.log(`✅ registerAgent(): Real agent registration successful! Transaction hash: ${receipt.transactionHash}`);
         
         // Get CID
         agentCid = await registry.addressToCid(tester.address);
@@ -268,7 +269,7 @@ async function main() {
       const outputHash = hre.ethers.id("output: navigation completed successfully");
       const metadataCID = "QmHackathonTestProof123456789ABC";
       
-      console.log("📝 执行真实认知证明提交交易...");
+      console.log("📝 Executing real cognitive proof submission transaction...");
       const submitTx = await ledger.submitProof(
         agentCid,
         inputHash,
@@ -279,11 +280,11 @@ async function main() {
       const receipt = await submitTx.wait();
       
       if (!receipt.status) {
-        throw new Error(`❌ 认知证明提交交易失败！交易哈希: ${receipt.transactionHash}`);
+        throw new Error(`❌ Cognitive proof submission transaction failed! Transaction hash: ${receipt.transactionHash}`);
       }
       
-      console.log(`✅ submitProof(): 真实认知证明提交成功！交易哈希: ${receipt.transactionHash}`);
-      console.log(`   Gas 消耗: ${receipt.gasUsed.toString()} Gas`);
+      console.log(`✅ submitProof(): Real cognitive proof submission successful! Transaction hash: ${receipt.transactionHash}`);
+      console.log(`   Gas used: ${receipt.gasUsed.toString()} Gas`);
       
       // Parse ProofID from events
       for (const log of receipt.logs) {
@@ -309,74 +310,74 @@ async function main() {
         console.log(`   Attested By: ${proof.attestedBy.length} validators`);
         console.log(`   Chain Rank: ${proof.chainRank}`);
         
-        // 🆕 自动验证证明并发放NFT
+        // 🆕 Automatically verify proof and issue NFT
         if (Number(proof.status) === 0) {
-          console.log(`\n🔄 自动验证证明并发放NFT...`);
+          console.log(`\n🔄 Automatically verifying proof and issuing NFT...`);
           try {
-            // 检查DEPLOYER_PRIVATE_KEY（部署者拥有VALIDATOR_ROLE）
+            // Check DEPLOYER_PRIVATE_KEY (deployer has VALIDATOR_ROLE)
             if (!process.env.DEPLOYER_PRIVATE_KEY) {
-              throw new Error("❌ 未配置DEPLOYER_PRIVATE_KEY！无法验证证明");
+              throw new Error("❌ DEPLOYER_PRIVATE_KEY not configured! Cannot verify proof");
             }
             
-            // 检查当前所需验证数量
+            // Check current required attestation count
             const requiredAttestations = await ledger.requiredAttestations();
-            console.log(`💡 需要 ${requiredAttestations} 个验证者验证才能发放NFT`);
-            console.log(`💡 当前验证者数量: ${proof.attestedBy.length}`);
+            console.log(`💡 Requires ${requiredAttestations} validators to verify before issuing NFT`);
+            console.log(`💡 Current validator count: ${proof.attestedBy.length}`);
             
-            // 方案1：如果是管理员，临时降低阈值（推荐）
-            console.log(`\n📝 步骤1：临时降低验证阈值为1（便于评委测试）`);
+            // Solution 1: If admin, temporarily lower threshold (recommended)
+            console.log(`\n📝 Step 1: Temporarily lower verification threshold to 1 (for reviewer testing)`);
             const validatorWallet = new hre.ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, hre.ethers.provider);
             const validatorLedger = await hre.ethers.getContractAt('PoCLedger', deployment.contracts.Ledger, validatorWallet);
             
             const setThresholdTx = await validatorLedger.setRequiredAttestations(1);
             await setThresholdTx.wait();
-            console.log(`✅ 验证阈值已设置为1`);
+            console.log(`✅ Verification threshold set to 1`);
             
-            // 方案2：使用部署者钱包验证证明
-            console.log(`\n📝 步骤2：验证证明`);
+            // Solution 2: Use deployer wallet to verify proof
+            console.log(`\n📝 Step 2: Verify proof`);
             const attestTx = await validatorLedger.attestProof(proofId, true);
-            console.log(`📝 执行证明验证交易...`);
+            console.log(`📝 Executing proof verification transaction...`);
             const attestReceipt = await attestTx.wait();
             
             if (attestReceipt.status === 1) {
-              console.log(`✅ 证明验证成功！交易哈希: ${attestReceipt.transactionHash}`);
-              console.log(`   Gas 消耗: ${attestReceipt.gasUsed.toString()} Gas`);
+              console.log(`✅ Proof verification successful! Transaction hash: ${attestReceipt.transactionHash}`);
+              console.log(`   Gas used: ${attestReceipt.gasUsed.toString()} Gas`);
               
-              // 重新查询证明状态
+              // Re-query proof status
               const updatedProof = await ledger.getProof(proofId);
-              console.log(`✅ 证明状态已更新: ${updatedProof.status} (1=Verified, NFT已铸造)`);
+              console.log(`✅ Proof status updated: ${updatedProof.status} (1=Verified, NFT minted)`);
               
-              // 检查NFT是否已发放
+              // Check if NFT has been issued
               const ANFT = await hre.ethers.getContractFactory("ActionProofNFT");
               const aNFT = ANFT.attach(deployment.contracts.aNFT);
               const nftBalance = await aNFT.balanceOf(tester.address);
-              console.log(`✅ 评委钱包NFT余额: ${nftBalance.toString()} 个`);
+              console.log(`✅ Reviewer wallet NFT balance: ${nftBalance.toString()} NFTs`);
               
               if (nftBalance > 0) {
-                console.log(`🎉 NFT证书已成功发放给评委钱包！`);
-                console.log(`   总共获得 ${nftBalance} 个NFT证书`);
+                console.log(`🎉 NFT certificate successfully issued to reviewer wallet!`);
+                console.log(`   Total received ${nftBalance} NFT certificates`);
               }
               
-              // 恢复阈值为3
-              console.log(`\n📝 步骤3：恢复验证阈值为3`);
+              // Restore threshold to 3
+              console.log(`\n📝 Step 3: Restore verification threshold to 3`);
               const restoreTx = await validatorLedger.setRequiredAttestations(3);
               await restoreTx.wait();
-              console.log(`✅ 验证阈值已恢复为3`);
+              console.log(`✅ Verification threshold restored to 3`);
             } else {
-              console.log(`⚠️ 证明验证交易失败`);
+              console.log(`⚠️ Proof verification transaction failed`);
             }
           } catch (attestError) {
-            console.log(`⚠️ 自动验证失败: ${attestError.message}`);
-            console.log(`💡 证明已提交，可以稍后手动验证或启动Validator Daemon`);
+            console.log(`⚠️ Automatic verification failed: ${attestError.message}`);
+            console.log(`💡 Proof has been submitted, can be verified manually later or start Validator Daemon`);
           }
         } else if (Number(proof.status) === 1) {
-          console.log(`✅ 证明已被验证，NFT应该已发放`);
+          console.log(`✅ Proof has been verified, NFT should have been issued`);
           
-          // 检查NFT是否已发放
+          // Check if NFT has been issued
           const ANFT = await hre.ethers.getContractFactory("ActionProofNFT");
           const aNFT = ANFT.attach(deployment.contracts.aNFT);
           const nftBalance = await aNFT.balanceOf(tester.address);
-          console.log(`✅ 评委钱包NFT余额: ${nftBalance.toString()} 个`);
+          console.log(`✅ Reviewer wallet NFT balance: ${nftBalance.toString()} NFTs`);
         }
       }
     }
@@ -438,48 +439,48 @@ async function main() {
   // SUMMARY
   // ========================================================================
   // ========================================================================
-  // 验证钱包余额变化
+  // Verify wallet balance changes
   // ========================================================================
   console.log("\n" + "=".repeat(60));
-  console.log("🔍 验证钱包余额变化");
+  console.log("🔍 Verifying wallet balance changes");
   console.log("=".repeat(60));
   
   const balanceAfter = await provider.getBalance(tester.address);
   const gasUsed = balanceBefore - balanceAfter;
   
-  console.log(`📊 测试前余额: ${hre.ethers.formatEther(balanceBefore)} ETH`);
-  console.log(`📊 测试后余额: ${hre.ethers.formatEther(balanceAfter)} ETH`);
-  console.log(`⛽ Gas 消耗: ${hre.ethers.formatEther(gasUsed)} ETH`);
+  console.log(`📊 Pre-test balance: ${hre.ethers.formatEther(balanceBefore)} ETH`);
+  console.log(`📊 Post-test balance: ${hre.ethers.formatEther(balanceAfter)} ETH`);
+  console.log(`⛽ Gas used: ${hre.ethers.formatEther(gasUsed)} ETH`);
   
   if (gasUsed === 0n) {
-    throw new Error("❌ 钱包余额没有变化！交易可能没有执行，请检查配置");
+    throw new Error("❌ Wallet balance unchanged! Transactions may not have executed, please check configuration");
   }
   
-  console.log("✅ 钱包余额变化验证通过 - 评审钱包真实参与了测试！");
+  console.log("✅ Wallet balance change verification passed - Reviewer wallet truly participated in testing!");
   
   console.log("\n" + "=".repeat(60));
-  console.log("🎉 黑客松测试总结");
+  console.log("🎉 Hackathon Test Summary");
   console.log("=".repeat(60));
-  console.log("\n✅ 所有合约功能可调用！");
-  console.log("✅ 所有测试成功完成！");
-  console.log("✅ 评审钱包真实参与交易！");
-  console.log("✅ 钱包余额真实变化！");
-  console.log("\n📋 合约地址 (用于提交):");
+  console.log("\n✅ All contract functions callable!");
+  console.log("✅ All tests completed successfully!");
+  console.log("✅ Reviewer wallet truly participated in transactions!");
+  console.log("✅ Wallet balance truly changed!");
+  console.log("\n📋 Contract addresses (for submission):");
   console.log(`   CATK: ${deployment.contracts.CATK}`);
   console.log(`   aNFT: ${deployment.contracts.aNFT}`);
   console.log(`   Registry: ${deployment.contracts.Registry}`);
   console.log(`   Ledger: ${deployment.contracts.Ledger}`);
   console.log(`   LegalWrapper: ${deployment.contracts.LegalWrapper}`);
-  console.log("\n📝 重要提示：添加CATK代币到钱包");
+  console.log("\n📝 Important: Add CATK token to wallet");
   console.log("============================================================");
-  console.log("测试完成后，请在钱包中手动添加CATK代币以查看余额：");
-  console.log("1. 在钱包中找到\"添加代币\"功能");
-  console.log("2. 选择网络: Paseo PassetHub TestNet");
-  console.log("3. 输入合约地址: " + deployment.contracts.CATK);
-  console.log("4. 完成添加后即可看到CATK余额");
-  console.log("\n💡 这是测试网络的限制，钱包无法自动检测自定义代币。");
+  console.log("After testing, please manually add CATK token in wallet to view balance:");
+  console.log("1. Find \"Add Token\" function in wallet");
+  console.log("2. Select network: Paseo PassetHub TestNet");
+  console.log("3. Enter contract address: " + deployment.contracts.CATK);
+  console.log("4. After adding, CATK balance will be visible");
+  console.log("\n💡 This is a testnet limitation, wallets cannot automatically detect custom tokens.");
 
-  console.log("\n🚀 项目已准备好提交黑客松！");
+  console.log("\n🚀 Project is ready for hackathon submission!");
   console.log("=" + "=".repeat(59) + "\n");
 }
 

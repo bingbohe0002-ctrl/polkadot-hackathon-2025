@@ -279,13 +279,51 @@ npm run start:test
 - ✅ **API 接口测试** - 健康检查、认知事件提交
 - ✅ **端到端流程测试** - 合约部署、网络连接、钱包状态
 - ✅ **测试数据记录** - 测试前后数据对比
-- ✅ **服务启动指导** - AHIN Indexer + Validator Daemon
+- ✅ **服务真实启动** - AHIN Indexer + Validator Daemon（保持运行）
 
 **启动完成后**：
-- 🌐 **AHIN Indexer**: http://localhost:3000 (认知事件索引服务)
-- 🔧 **Validator Daemon**: 后台运行 (证明验证服务)
+- 🌐 **AHIN Indexer**: http://localhost:3000 (认知事件索引服务，**真实运行中**)
+- 🔧 **Validator Daemon**: 后台运行 (证明验证服务，**真实运行中**)
 - 📊 **查看测试结果**: `npm run show:deployment-data`
 - 🧪 **测试覆盖**: 智能合约 + 服务层 + API + 端到端流程
+- ⚠️ **重要**: 服务启动后会持续运行，按 `Ctrl+C` 可停止所有服务
+
+### 5. 前端服务启动
+
+前端提供了完整的Web界面，用于查看和管理认知证明数据。
+
+#### 5.1 服务启动
+
+```bash
+# 进入前端目录
+cd frontend
+
+# 安装依赖（首次运行需要）
+npm install
+
+# 启动开发服务器
+npm run dev
+```
+
+**启动完成后**：
+- 📱 **前端界面**: http://localhost:5173 (Vite默认端口，如果被占用会自动切换)
+- 🌐 **访问地址**: 打开浏览器访问显示的地址（通常是 http://localhost:5173 或 http://localhost:5174）
+
+**功能模块**：
+- 📊 **Overview Dashboard** - 系统概览和统计
+- 🔍 **Proof Explorer** - 查看和管理所有证明（支持详情查看和时间排序）
+- 👥 **Agent Registry** - 查看和管理AI代理（显示真实数据）
+- 📈 **ChainRank Analytics** - 代理排名和性能分析
+- 🛡️ **Regulatory Oversight** - 监管审查和审批
+- ✅ **Compliance Center** - 合规检查和监控
+- 💰 **Token Economics** - 代币和NFT经济数据
+- 🤖 **Robot Control** - AI机器人控制面板
+- ⚙️ **System Settings** - 系统配置和管理
+
+**数据说明**：
+- ✅ **真实数据**: 证明列表、代理列表、Recent Activity均从链上查询真实数据
+- ✅ **混合方案**: Dashboard统计使用混合数据（真实+模拟），确保界面完整显示
+- ✅ **数据标识**: 所有数据都标记了来源（`isReal: true` 或 `dataSource: 'real'/'mock'`）
 
 ## 📋 已部署合约地址
 
@@ -297,15 +335,6 @@ npm run start:test
 - **Legal Wrapper**: `0x...` (合规合约)
 
 ## 🧪 测试验证
-
-### 评审测试（一步完成）
-
-**前提条件**：确保已完成第3步的环境配置
-
-```bash
-# 一键运行评审测试（包含所有验证流程）
-npm run start:test
-```
 
 **完整功能测试包含**：
 - ✅ **环境配置验证** - 私钥格式、网络连接、钱包余额

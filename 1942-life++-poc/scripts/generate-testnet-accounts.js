@@ -1,13 +1,14 @@
 // ============================================================================
-// scripts/generate-testnet-accounts.js - 生成测试网账号
+// scripts/generate-testnet-accounts.js - Generate testnet accounts
 // ============================================================================
 const { ethers } = require("hardhat");
+const { maskPrivateKey, maskMnemonic } = require('./utils/mask-sensitive');
 
 async function main() {
-  console.log("🔑 生成测试网账号");
+  console.log("🔑 Generating testnet accounts");
   console.log("=".repeat(60));
 
-  // 生成 3 个测试账号
+  // Generate 3 test accounts
   const accounts = [];
   
   for (let i = 0; i < 3; i++) {
@@ -20,44 +21,45 @@ async function main() {
     });
   }
 
-  console.log("\n📋 生成的测试账号:");
+  console.log("\n📋 Generated test accounts:");
   console.log("=".repeat(60));
 
   accounts.forEach((account, index) => {
     console.log(`\n${index + 1}. ${account.name} Account:`);
     console.log(`   Address: ${account.address}`);
-    console.log(`   Private Key: ${account.privateKey}`);
-    console.log(`   Mnemonic: ${account.mnemonic}`);
+    console.log(`   Private Key: ${maskPrivateKey(account.privateKey)}`);
+    console.log(`   Mnemonic: ${maskMnemonic(account.mnemonic)}`);
   });
 
   console.log("\n" + "=".repeat(60));
-  console.log("⚠️  重要提醒:");
+  console.log("⚠️  Important Reminders:");
   console.log("=".repeat(60));
-  console.log("1. 请妥善保存私钥和助记词");
-  console.log("2. 这些是测试账号，不要用于主网");
-  console.log("3. 请到水龙头申请测试网 DOT 代币");
-  console.log("4. 确保每个账号有足够的余额");
+  console.log("1. Please securely save private keys and mnemonics");
+  console.log("2. These are test accounts, do not use on mainnet");
+  console.log("3. Please request testnet DOT tokens from faucet");
+  console.log("4. Ensure each account has sufficient balance");
 
-  console.log("\n🔗 获取测试网 DOT 代币:");
-  console.log("1. 访问: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.polkadot.io#/accounts");
-  console.log("2. 连接钱包或导入账号");
-  console.log("3. 点击 'Faucet' 申请代币");
-  console.log("4. 等待代币到账");
+  console.log("\n🔗 Getting testnet DOT tokens:");
+  console.log("1. Visit: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Frpc.polkadot.io#/accounts");
+  console.log("2. Connect wallet or import account");
+  console.log("3. Click 'Faucet' to request tokens");
+  console.log("4. Wait for tokens to arrive");
 
-  console.log("\n📝 环境变量配置:");
+  console.log("\n📝 Environment variable configuration:");
   console.log("=".repeat(60));
-  console.log("将以下内容添加到 .env.testnet 文件:");
+  console.log("Add the following to .env.testnet file:");
   console.log("");
   console.log(`PRIVATE_KEY=${accounts[0].privateKey}`);
   console.log(`VALIDATOR_PRIVATE_KEY=${accounts[2].privateKey}`);
   console.log(`AGENT_PRIVATE_KEY=${accounts[1].privateKey}`);
   console.log("");
-  console.log("然后运行: npm run deploy:testnet");
+  console.log("⚠️  WARNING: Sensitive information will be printed above. Ensure it is not logged or exposed.");
+  console.log("Then run: npm run deploy:testnet");
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error("❌ 生成账号失败:", error);
+    console.error("❌ Account generation failed:", error);
     process.exit(1);
   });
