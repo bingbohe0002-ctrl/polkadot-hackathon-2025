@@ -192,13 +192,13 @@ export const apiService = {
    * This is queried separately to avoid blocking the initial page load.
    * 
    * @param params - Optional query parameters for time range filtering
-   * @param params.timeRange - Predefined time range ('7d', '30d', '90d', 'all')
+   * @param params.timeRange - Predefined time range ('1d', '7d', '30d', '90d', 'all')
    * @param params.startTime - Custom start timestamp (Unix timestamp in seconds)
    * @param params.endTime - Custom end timestamp (Unix timestamp in seconds)
    * @returns Promise resolving to object with recentActivity and topAgents
    */
   async getDashboardActivity(params?: {
-    timeRange?: '7d' | '30d' | '90d' | 'all';
+    timeRange?: '1d' | '7d' | '30d' | '90d' | 'all';
     startTime?: number;
     endTime?: number;
   }): Promise<{
@@ -225,13 +225,13 @@ export const apiService = {
    * This is the legacy endpoint that combines all stats in one request.
    * 
    * @param params - Optional query parameters for time range filtering
-   * @param params.timeRange - Predefined time range ('7d', '30d', '90d', 'all')
+   * @param params.timeRange - Predefined time range ('1d', '7d', '30d', '90d', 'all')
    * @param params.startTime - Custom start timestamp (Unix timestamp in seconds)
    * @param params.endTime - Custom end timestamp (Unix timestamp in seconds)
    * @returns Promise resolving to DashboardStats object
    */
   async getDashboardStats(params?: {
-    timeRange?: '7d' | '30d' | '90d' | 'all';
+    timeRange?: '1d' | '7d' | '30d' | '90d' | 'all';
     startTime?: number;
     endTime?: number;
   }): Promise<DashboardStats> {
@@ -266,7 +266,7 @@ export const apiService = {
   async getProofs(params?: { 
     search?: string; 
     status?: string;
-    timeRange?: '7d' | '30d' | '90d' | 'all';
+    timeRange?: '1d' | '7d' | '30d' | '90d' | 'all';
     startTime?: number;
     endTime?: number;
   }): Promise<Proof[]> {

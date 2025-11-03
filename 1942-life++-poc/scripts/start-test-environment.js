@@ -195,32 +195,43 @@ async function main() {
   console.log(`   Registry: ${env.REGISTRY_ADDRESS}`);
   console.log(`   Port: ${env.PORT}`);
   
-  // Start AHIN Indexer
+  // Start AHIN Indexer (idempotent: skip if already running)
   console.log("\n1️⃣ Starting AHIN Indexer...");
-  const indexerProcess = spawn("npx", ["ts-node", "src/ahin-indexer/server.ts"], {
-    env: env,
-    stdio: "inherit",
-    shell: true
-  });
+  let indexerProcess = null;
+  try {
+    const health = await axios.get(`http://localhost:${env.PORT}/health`, { timeout: 1500 });
+    if (health.status === 200) {
+      console.log(`✅ AHIN Indexer already running on port ${env.PORT}, skip starting another instance`);
+    }
+  } catch {
+    indexerProcess = spawn("npx", ["ts-node", "src/ahin-indexer/server.ts"], {
+      env: env,
+      stdio: "inherit",
+      shell: true
+    });
+    indexerProcess.on("error", (error) => {
+      console.error("❌ AHIN Indexer startup failed:", error);
+    });
+    // Wait for Indexer to start
+    await new Promise(resolve => setTimeout(resolve, 3000));
+  }
   
-  indexerProcess.on("error", (error) => {
-    console.error("❌ AHIN Indexer startup failed:", error);
-  });
-  
-  // Wait for Indexer to start
-  await new Promise(resolve => setTimeout(resolve, 3000));
-  
-  // Start Validator Daemon
+  // Start Validator Daemon (guarded by VALIDATOR_PRIVATE_KEY)
   console.log("\n2️⃣ Starting Validator Daemon...");
-  const validatorProcess = spawn("npx", ["ts-node", "scripts/run-validator.ts"], {
-    env: env,
-    stdio: "inherit",
-    shell: true
-  });
-  
-  validatorProcess.on("error", (error) => {
-    console.error("❌ Validator Daemon startup failed:", error);
-  });
+  let validatorProcess = null;
+  if (process.env.VALIDATOR_PRIVATE_KEY && process.env.VALIDATOR_PRIVATE_KEY.startsWith('0x') && process.env.VALIDATOR_PRIVATE_KEY.length === 66) {
+    validatorProcess = spawn("npx", ["ts-node", "scripts/run-validator.ts"], {
+      env: env,
+      stdio: "inherit",
+      shell: true
+    });
+    validatorProcess.on("error", (error) => {
+      console.error("❌ Validator Daemon startup failed:", error);
+    });
+  } else {
+    console.log("⚠️  VALIDATOR_PRIVATE_KEY not set or invalid, skipping Validator Daemon startup");
+    console.log("💡 To enable validator, export VALIDATOR_PRIVATE_KEY=0x... (64 hex)");
+  }
   
   console.log("\n" + "=".repeat(60));
   console.log("✅ Services started successfully!");
@@ -234,8 +245,8 @@ async function main() {
   console.log("✅ API endpoints: Completed");
   console.log("✅ End-to-end flow: Completed");
   console.log("\n🌐 Service status:");
-  console.log("✅ AHIN Indexer: Running (port 3000)");
-  console.log("✅ Validator Daemon: Running (background listening)");
+  console.log(`✅ AHIN Indexer: ${indexerProcess ? 'Started' : 'Already running'} (port ${env.PORT})`);
+  console.log(`✅ Validator Daemon: ${validatorProcess ? 'Running' : 'Skipped'}`);
   console.log("\n🔗 Access addresses:");
   console.log("   AHIN Indexer API: http://localhost:3000");
   console.log("   Health check: http://localhost:3000/health");

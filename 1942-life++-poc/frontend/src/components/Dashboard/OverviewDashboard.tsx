@@ -37,14 +37,6 @@ export default function OverviewDashboard() {
   // State: Independent loading indicator for Recent Activity
   const [activityLoading, setActivityLoading] = useState(true);
 
-  // State: Time range selection (default: 7 days)
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('7d');
-  
-  // State: Custom date range selection
-  const [useCustomDate, setUseCustomDate] = useState(false);
-  const [customStartDate, setCustomStartDate] = useState<string>('');
-  const [customEndDate, setCustomEndDate] = useState<string>('');
-
   /**
    * Effect: Load stats on mount and set up auto-refresh
    * 
@@ -58,15 +50,7 @@ export default function OverviewDashboard() {
     return () => clearInterval(interval); // Cleanup on unmount
   }, []); // Only run on mount
 
-  /**
-   * Effect: Reload Recent Activity when time range changes
-   * 
-   * Separately reloads only the Recent Activity feed when time range selection changes,
-   * without blocking or reloading the entire dashboard.
-   */
-  useEffect(() => {
-    loadActivity();
-  }, [timeRange, customStartDate, customEndDate]); // Reload when time range or custom dates change
+  // Recent Activity must use mock data only → no extra fetch
 
   /**
    * Load Dashboard Statistics (Quick)
@@ -80,15 +64,43 @@ export default function OverviewDashboard() {
     try {
       // First, get quick mock data for instant UI rendering
       const quickData = await apiService.getDashboardStatsQuick();
-      setStats(quickData);
+      const hasActivity = Array.isArray(quickData.recentActivity) && quickData.recentActivity.length > 0;
+      const ensured = hasActivity ? quickData : {
+        ...quickData,
+        recentActivity: generateMockRecentActivity(),
+      } as DashboardStats;
+      setStats(ensured);
       setLoading(false);
       
-      // Then, load real activity data asynchronously
-      loadActivity();
+      // Recent Activity must use mock data only; quick/ensured data already contains it
+      setActivityLoading(false);
     } catch (error) {
       console.error('Error loading dashboard stats:', error);
       setLoading(false);
     }
+  }
+
+  function generateMockRecentActivity() {
+    const now = Date.now();
+    const items = [
+      { offsetMin: 2,  msg: 'Proof 0xabc12345... verified' },
+      { offsetMin: 8,  msg: 'Agent robot-arm-001 submitted a proof' },
+      { offsetMin: 25, msg: 'Proof 0xdef67890... verified' },
+      { offsetMin: 55, msg: 'Agent delivery-bot-015 submitted a proof' },
+      { offsetMin: 120, msg: 'Proof 0x9988aa77... verified' },
+    ];
+    return items.map(i => {
+      const ts = now - i.offsetMin * 60000;
+      const mins = i.offsetMin;
+      const time = mins < 60 ? `${mins}m ago` : `${Math.floor(mins / 60)}h ago`;
+      return {
+        type: 'proof',
+        msg: i.msg,
+        time,
+        timestamp: ts,
+        isReal: false,
+      } as any;
+    });
   }
 
   /**
@@ -103,18 +115,8 @@ export default function OverviewDashboard() {
     try {
       setActivityLoading(true);
       
-      const params: any = {};
-      
-      if (useCustomDate && customStartDate && customEndDate) {
-        // Use custom date range (convert to Unix timestamp in seconds)
-        params.startTime = Math.floor(new Date(customStartDate).getTime() / 1000);
-        params.endTime = Math.floor(new Date(customEndDate + 'T23:59:59').getTime() / 1000);
-      } else {
-        // Use predefined time range
-        params.timeRange = timeRange;
-      }
-      
-      const activityData = await apiService.getDashboardActivity(params);
+      // No time parameters: backend will返回“最近 N 条”逻辑
+      const activityData = await apiService.getDashboardActivity();
       
       // Merge activity data into existing stats
       if (stats) {
@@ -200,58 +202,6 @@ export default function OverviewDashboard() {
             <h1 className="text-3xl font-bold text-gray-900">Life++ Overview Dashboard</h1>
             <p className="text-gray-600 mt-2">Real-time system monitoring and analytics</p>
           </div>
-          
-          {/* Time Range Selector */}
-          <div className="flex items-center gap-3">
-            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Time Range:</label>
-            <div className="flex items-center gap-2">
-              <select
-                value={timeRange}
-                onChange={(e) => {
-                  setTimeRange(e.target.value as any);
-                  setUseCustomDate(false);
-                }}
-                disabled={useCustomDate}
-                className="px-3 py-2 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="7d">Last 7 Days</option>
-                <option value="30d">Last 30 Days</option>
-                <option value="90d">Last 90 Days</option>
-                <option value="all">All Time</option>
-              </select>
-              
-              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={useCustomDate}
-                  onChange={(e) => setUseCustomDate(e.target.checked)}
-                  className="w-4 h-4"
-                />
-                <span>Custom</span>
-              </label>
-              
-              {useCustomDate && (
-                <>
-                  <input
-                    type="date"
-                    value={customStartDate}
-                    onChange={(e) => setCustomStartDate(e.target.value)}
-                    className="px-3 py-2 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    max={customEndDate || new Date().toISOString().split('T')[0]}
-                  />
-                  <span className="text-gray-500">to</span>
-                  <input
-                    type="date"
-                    value={customEndDate}
-                    onChange={(e) => setCustomEndDate(e.target.value)}
-                    className="px-3 py-2 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    min={customStartDate}
-                    max={new Date().toISOString().split('T')[0]}
-                  />
-                </>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -290,13 +240,22 @@ export default function OverviewDashboard() {
         <div className="col-span-2 bg-white rounded-lg shadow p-6">
           <h3 className="font-bold text-lg mb-4">Proof Submission Volume (24h)</h3>
           <div className="h-64 flex items-end justify-between gap-2">
-            {stats.proofVolume24h.map((h, i) => (
-              <div 
-                key={i} 
-                className="flex-1 bg-blue-500 rounded-t hover:bg-blue-600 transition-colors" 
-                style={{height: `${h}%`}} 
-              />
-            ))}
+            {stats.proofVolume24h && stats.proofVolume24h.length > 0 ? (
+              stats.proofVolume24h.map((h: any, i: number) => {
+                // Handle both object format {hour, volume} and number format
+                const volume = typeof h === 'object' && h.volume !== undefined ? h.volume : h;
+                return (
+                  <div 
+                    key={i} 
+                    className="flex-1 bg-blue-500 rounded-t hover:bg-blue-600 transition-colors" 
+                    style={{height: `${volume}%`}} 
+                    title={`${typeof h === 'object' && h.hour ? h.hour : `${i}:00`}: ${volume}`}
+                  />
+                );
+              })
+            ) : (
+              <div className="text-center text-gray-500 w-full">No data available</div>
+            )}
           </div>
         </div>
 

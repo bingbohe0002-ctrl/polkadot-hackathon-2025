@@ -1056,116 +1056,68 @@ class AHINService {
         const now = Date.now();
         const todayStart = Math.floor(now / 86400000) * 86400000;
         
-        // Process recent events to build recentActivity
-        // If time range is provided, process more events to find matches within range
-        // Otherwise, just process the most recent events
-        let eventsToProcess: any[] = [];
-        
-        if (startTime !== undefined || endTime !== undefined) {
-          // If time range is specified, process more events to find matches
-          // Start from the end (most recent) and work backwards
-          const startMs = startTime ? startTime * 1000 : 0;
-          const endMs = endTime ? endTime * 1000 : now;
-          
-          console.log(`⏰ Dashboard: Filtering events by time range: ${new Date(startMs).toISOString()} to ${new Date(endMs).toISOString()}`);
-          
-          // Process events from the end backwards to find recent ones within time range
-          // Process ALL events (not just 200) to ensure we find matches for wider time ranges
-          const reversedEvents = [...proofEvents].reverse();
-          
-          let checkedCount = 0;
-          for (const event of reversedEvents) {
-            checkedCount++;
+        // Process recent events to build recentActivity（优化：区块时间初筛 + 限量并发 getProof）
+        const MAX_CANDIDATES = 120; // 只看最新 120 条事件
+        const MAX_RESULTS = 20;     // 最多取 20 条进入下一步
+        const CONCURRENCY = 6;      // getProof 并发上限
+
+        const recentEvents = proofEvents.slice(-MAX_CANDIDATES).reverse();
+
+        // 并发获取区块时间，作为初筛依据
+        const blockTimeResults: { proofId: string; ts: number }[] = [];
+        const blockBatchSize = 12;
+        for (let i = 0; i < recentEvents.length; i += blockBatchSize) {
+          const batch = recentEvents.slice(i, i + blockBatchSize);
+          const part = await Promise.all(batch.map(async (e: any) => {
             try {
-              const eventLog = event as any;
-              const proofId = eventLog.args?.proofId;
-              if (!proofId) continue;
-              
-              // Fetch proof details to get accurate timestamp
-              const proof = await this.getProof(proofId);
-              const proofTime = Number(proof.timestamp) * 1000;
-              
-              // Check if proof is within time range
-              if (proofTime >= startMs && proofTime <= endMs) {
-                eventsToProcess.push({ event, proof, proofId, proofTime });
-                
-                // Stop if we have enough events (10 is enough for recent activity)
-                if (eventsToProcess.length >= 20) {
-                  console.log(`✅ Dashboard: Found ${eventsToProcess.length} events within time range (checked ${checkedCount} events)`);
-                  break;
-                }
-              }
-            } catch (e: any) {
-              // Skip individual errors, continue searching
-              continue;
-            }
-            
-            // Safety limit: don't check more than 500 events to avoid timeout
-            if (checkedCount >= 500) {
-              console.log(`⚠️  Dashboard: Checked ${checkedCount} events, found ${eventsToProcess.length} matches. Stopping search.`);
-              break;
-            }
-          }
-          
-          // If no events found in time range, fall back to most recent events
-          if (eventsToProcess.length === 0) {
-            console.log(`⚠️  Dashboard: No events found within time range, falling back to most recent 20 events`);
-            eventsToProcess = proofEvents.slice(-20).reverse().map((event: any) => {
-              const eventLog = event as any;
-              return { event, proofId: eventLog.args?.proofId };
-            });
-          }
-        } else {
-          // No time range filter, just use the most recent events
-          console.log(`📋 Dashboard: No time range filter, using most recent 20 events`);
-          eventsToProcess = proofEvents.slice(-20).reverse().map((event: any) => {
-            const eventLog = event as any;
-            return { event, proofId: eventLog.args?.proofId };
-          });
+              const eventLog = e as any;
+              const proofId = eventLog.args?.proofId as string;
+              if (!proofId) return null;
+              const b = await provider.getBlock(e.blockNumber);
+              if (!b || b.timestamp == null) return null;
+              return { proofId, ts: Number(b.timestamp) * 1000 };
+            } catch { return null; }
+          }));
+          blockTimeResults.push(...(part.filter(Boolean) as any[]));
         }
-        
-        // Process the selected events to build recentActivity
-        for (const item of eventsToProcess.slice(0, 20)) {
-          try {
-            let proofId: string;
-            let proof: any;
-            let proofTime: number;
-            
-            if (item.proof) {
-              // Already fetched proof data
-              proofId = item.proofId;
-              proof = item.proof;
-              proofTime = item.proofTime;
-            } else {
-              // Need to fetch proof data
-              proofId = item.proofId;
-              if (!proofId) continue;
-              
-              proof = await this.getProof(proofId);
-              proofTime = Number(proof.timestamp) * 1000;
+
+        // 时间过滤（若提供 start/end），再按时间倒序截取前 N 条
+        const startMs = startTime ? startTime * 1000 : 0;
+        const endMs = endTime ? endTime * 1000 : now;
+        const filtered = (startTime !== undefined || endTime !== undefined)
+          ? blockTimeResults.filter(r => r.ts >= startMs && r.ts <= endMs)
+          : blockTimeResults;
+
+        const top = filtered.sort((a, b) => b.ts - a.ts).slice(0, MAX_RESULTS);
+
+        // 对最终入选的少量项并发 getProof（限流）
+        const detailChunks: { proofId: string; ts: number }[][] = [];
+        for (let i = 0; i < top.length; i += CONCURRENCY) detailChunks.push(top.slice(i, i + CONCURRENCY));
+
+        for (const chunk of detailChunks) {
+          const details = await Promise.all(chunk.map(async (item) => {
+            try {
+              const proof = await this.getProof(item.proofId);
+              return { proofId: item.proofId, ts: item.ts, proof };
+            } catch { return null; }
+          }));
+
+          for (const d of details) {
+            if (!d) continue;
+            // 统计今日 proof
+            if (d.ts >= todayStart) {
+              if (!startTime || d.ts >= startMs) totalProofs++;
             }
-            
-            // Count proofs today (only if within time range or no time range filter)
-            if (proofTime >= todayStart) {
-              if (!startTime || proofTime >= startTime * 1000) {
-                totalProofs++;
-              }
-            }
-            
-            // Add to recent activity if within limit
             if (recentActivity.length < 10) {
-              const timeAgo = Math.floor((now - proofTime) / 60000);
+              const timeAgo = Math.floor((now - d.ts) / 60000);
               recentActivity.push({
                 type: 'proof',
-                msg: `Proof ${proofId.slice(0, 10)}... verified`,
+                msg: `Proof ${d.proofId.slice(0, 10)}... verified`,
                 time: timeAgo < 1 ? 'just now' : timeAgo < 60 ? `${timeAgo}m ago` : `${Math.floor(timeAgo / 60)}h ago`,
-                timestamp: proofTime, // Store actual timestamp for filtering
+                timestamp: d.ts,
                 isReal: true
               });
             }
-          } catch (e: any) {
-            // Ignore errors for individual proof processing
-            continue;
           }
         }
         
@@ -1394,20 +1346,7 @@ app.get('/api/dashboard/stats/quick', async (req, res) => {
       activeAgents: 342,
       validatorsOnline: 89,
       avgVerificationTime: '2.3s',
-      proofVolume24h: [
-        { hour: '00:00', volume: 42 }, { hour: '01:00', volume: 38 },
-        { hour: '02:00', volume: 35 }, { hour: '03:00', volume: 41 },
-        { hour: '04:00', volume: 45 }, { hour: '05:00', volume: 52 },
-        { hour: '06:00', volume: 58 }, { hour: '07:00', volume: 67 },
-        { hour: '08:00', volume: 78 }, { hour: '09:00', volume: 85 },
-        { hour: '10:00', volume: 92 }, { hour: '11:00', volume: 88 },
-        { hour: '12:00', volume: 95 }, { hour: '13:00', volume: 102 },
-        { hour: '14:00', volume: 98 }, { hour: '15:00', volume: 105 },
-        { hour: '16:00', volume: 110 }, { hour: '17:00', volume: 108 },
-        { hour: '18:00', volume: 115 }, { hour: '19:00', volume: 112 },
-        { hour: '20:00', volume: 98 }, { hour: '21:00', volume: 87 },
-        { hour: '22:00', volume: 76 }, { hour: '23:00', volume: 65 }
-      ],
+      proofVolume24h: [42, 38, 35, 41, 45, 52, 58, 67, 78, 85, 92, 88, 95, 102, 98, 105, 110, 108, 115, 112, 98, 87, 76, 65],
       systemHealth: [
         { name: 'Blockchain Node', status: 'Healthy', value: 98 },
         { name: 'IPFS Storage', status: 'Healthy', value: 95 },
@@ -1415,12 +1354,16 @@ app.get('/api/dashboard/stats/quick', async (req, res) => {
         { name: 'API Services', status: 'Healthy', value: 99 }
       ],
       recentActivity: [],
-      topAgents: [],
+      topAgents: [
+        { name: 'agent-f39f-8ce5', proofs: 11, chainrank: 71 },
+        { name: 'agent-05ea-3ad5', proofs: 19, chainrank: 71 },
+        { name: 'agent-6a86-0fdc', proofs: 1, chainrank: 70 }
+      ],
       dataSource: {
         proofs: 'mock',
         agents: 'mock',
         recentActivity: 'loading',
-        topAgents: 'loading',
+        topAgents: 'mock',
         other: 'mock'
       }
     };
@@ -1437,7 +1380,7 @@ app.get('/api/dashboard/stats/quick', async (req, res) => {
  * Returns only the recent activity feed based on real blockchain events.
  * This endpoint is queried separately to avoid blocking the initial page load.
  * 
- * @query {string} timeRange - Optional time range (7d, 30d, 90d, all)
+ * @query {string} timeRange - Optional time range (1d, 7d, 30d, 90d, all)
  * @query {number} startTime - Optional custom start timestamp (Unix seconds)
  * @query {number} endTime - Optional custom end timestamp (Unix seconds)
  * @returns {Object} Recent activity array with real blockchain data
@@ -1458,6 +1401,10 @@ app.get('/api/dashboard/stats/activity', async (req, res) => {
     } else if (timeRange !== 'all') {
       const now = Math.floor(Date.now() / 1000);
       switch (timeRange) {
+        case '1d':
+          startTime = now - 1 * 24 * 60 * 60;
+          endTime = now;
+          break;
         case '7d':
           startTime = now - 7 * 24 * 60 * 60;
           endTime = now;
@@ -1493,7 +1440,7 @@ app.get('/api/dashboard/stats/activity', async (req, res) => {
  * Always returns data (real or mock) for fast response.
  * Real data is merged with mock data if query is slow or fails.
  * 
- * @param req.query.timeRange - Predefined time range ('7d', '30d', '90d', 'all') for recentActivity and topAgents (default: '7d')
+ * @param req.query.timeRange - Predefined time range ('1d', '7d', '30d', '90d', 'all') for recentActivity and topAgents (default: '7d')
  * @param req.query.startTime - Custom start timestamp (Unix timestamp in seconds)
  * @param req.query.endTime - Custom end timestamp (Unix timestamp in seconds)
  */

@@ -292,25 +292,7 @@ npm run start:test
 
 前端提供了完整的Web界面，用于查看和管理认知证明数据。
 
-#### 5.1 文件配置（可选）
-
-如果后端API不在默认地址（`http://localhost:3000`），可以创建前端环境配置文件：
-
-```bash
-# 进入前端目录
-cd frontend
-
-# 创建环境配置文件（可选）
-# 如果后端API地址不是 http://localhost:3000，才需要配置
-echo "VITE_API_URL=http://your-backend-url:3000" > .env
-```
-
-**配置说明**：
-- ✅ **默认配置**: 如果后端运行在 `http://localhost:3000`，无需配置
-- ✅ **自定义配置**: 如果后端在其他地址或端口，需要创建 `.env` 文件并设置 `VITE_API_URL`
-- ✅ **配置格式**: `VITE_API_URL=http://your-backend-url:port`
-
-#### 5.2 服务启动
+#### 5.1 服务启动
 
 ```bash
 # 进入前端目录
@@ -353,15 +335,6 @@ npm run dev
 - **Legal Wrapper**: `0x...` (合规合约)
 
 ## 🧪 测试验证
-
-### 评审测试（一步完成）
-
-**前提条件**：确保已完成第3步的环境配置
-
-```bash
-# 一键运行评审测试（包含所有验证流程）
-npm run start:test
-```
 
 **完整功能测试包含**：
 - ✅ **环境配置验证** - 私钥格式、网络连接、钱包余额

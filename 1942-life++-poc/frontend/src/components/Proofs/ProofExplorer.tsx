@@ -33,13 +33,7 @@ export default function ProofExplorer() {
   // State: Current status filter selection ('all', 'verified', 'pending', 'rejected')
   const [filterStatus, setFilterStatus] = useState('all');
   
-  // State: Time range selection (default: 7 days)
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('7d');
-  
-  // State: Custom date range selection
-  const [useCustomDate, setUseCustomDate] = useState(false);
-  const [customStartDate, setCustomStartDate] = useState<string>('');
-  const [customEndDate, setCustomEndDate] = useState<string>('');
+  // Remove time range selection; default to backend latest results
   
   // State: Array of proof objects fetched from backend
   const [proofs, setProofs] = useState<Proof[]>([]);
@@ -64,7 +58,7 @@ export default function ProofExplorer() {
    */
   useEffect(() => {
     loadProofs();
-  }, [filterStatus, timeRange, customStartDate, customEndDate]); // Auto-trigger on status or time range change
+  }, [filterStatus]);
 
   /**
    * Load Proofs from Backend
@@ -83,84 +77,20 @@ export default function ProofExplorer() {
         status: filterStatus !== 'all' ? filterStatus : undefined // Only include status if not 'all'
       };
       
-      // Add time range parameters
-      if (useCustomDate && customStartDate && customEndDate) {
-        // Use custom date range (convert to Unix timestamp in seconds)
-        params.startTime = Math.floor(new Date(customStartDate).getTime() / 1000);
-        params.endTime = Math.floor(new Date(customEndDate + 'T23:59:59').getTime() / 1000);
-      } else {
-        // Use predefined time range
-        params.timeRange = timeRange;
-      }
-      
-      const data = await apiService.getProofs(params);
-      
-      // If no real data and no search term, use mock data for demonstration
-      if (data.length === 0 && !searchTerm) {
-        console.log('No real proofs found, displaying mock data');
-        // Generate mock data and filter by time range and status if needed
-        let mockProofs = apiService.generateMockProofs(15);
-        
-        // Apply status filter to mock data first (if not 'all')
-        if (filterStatus !== 'all') {
-          mockProofs = mockProofs.filter((proof) => proof.status === filterStatus);
-          console.log(`Applied status filter "${filterStatus}": ${mockProofs.length} mock proofs`);
-        }
-        
-        // Apply time range filter to mock data
-        if (params.timeRange && params.timeRange !== 'all') {
-          const now = Date.now();
-          let startMs: number;
-          switch (params.timeRange) {
-            case '7d':
-              startMs = now - 7 * 24 * 60 * 60 * 1000;
-              break;
-            case '30d':
-              startMs = now - 30 * 24 * 60 * 60 * 1000;
-              break;
-            case '90d':
-              startMs = now - 90 * 24 * 60 * 60 * 1000;
-              break;
-            default:
-              startMs = 0;
-          }
-          
-          mockProofs = mockProofs.filter((proof) => {
-            const proofTime = parseTimeToTimestamp(proof.time);
-            return proofTime >= startMs && proofTime <= now;
-          });
-        } else if (params.startTime && params.endTime) {
-          const startMs = params.startTime * 1000;
-          const endMs = params.endTime * 1000;
-          
-          mockProofs = mockProofs.filter((proof) => {
-            const proofTime = parseTimeToTimestamp(proof.time);
-            return proofTime >= startMs && proofTime <= endMs;
-          });
-        }
-        
-        setProofs(mockProofs);
-      } else {
-        // Apply status filter to real data if needed (backend should have already done this, but double-check)
-        let filteredData = data;
-        if (filterStatus !== 'all') {
-          filteredData = data.filter((proof) => proof.status === filterStatus);
-          console.log(`Applied status filter "${filterStatus}" to real data: ${filteredData.length} proofs`);
-        }
-        setProofs(filteredData);
-      }
+      // No time parameters: backend returns all/latest, frontend再排序
+    const data = await apiService.getProofs(params);
+    // Real data only: no mock fallback
+    let filteredData = data;
+    if (filterStatus !== 'all') {
+      filteredData = data.filter((proof) => proof.status === filterStatus);
+      console.log(`Applied status filter "${filterStatus}" to real data: ${filteredData.length} proofs`);
+    }
+    setProofs(filteredData);
       setLoading(false);
     } catch (error) {
       console.error('Error loading proofs:', error);
-      // On error, show mock data instead of empty state (unless searching)
-      if (!searchTerm) {
-        let mockProofs = apiService.generateMockProofs(15);
-        // Apply status filter to error fallback mock data
-        if (filterStatus !== 'all') {
-          mockProofs = mockProofs.filter((proof) => proof.status === filterStatus);
-        }
-        setProofs(mockProofs);
-      }
+      // On error, do not use mock; show empty
+      setProofs([]);
       setLoading(false);
     }
   }
@@ -300,55 +230,7 @@ export default function ProofExplorer() {
             <option value="rejected">Rejected</option>
           </select>
           
-          {/* Time Range Selector */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600 whitespace-nowrap">Time:</label>
-            <select
-              value={timeRange}
-              onChange={(e) => {
-                setTimeRange(e.target.value as any);
-                setUseCustomDate(false);
-              }}
-              disabled={useCustomDate}
-              className="px-3 py-2 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="7d">Last 7 Days</option>
-              <option value="30d">Last 30 Days</option>
-              <option value="90d">Last 90 Days</option>
-              <option value="all">All Time</option>
-            </select>
-            
-            <label className="flex items-center gap-1 text-sm text-gray-600 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={useCustomDate}
-                onChange={(e) => setUseCustomDate(e.target.checked)}
-                className="w-4 h-4"
-              />
-              <span>Custom</span>
-            </label>
-            
-            {useCustomDate && (
-              <>
-                <input
-                  type="date"
-                  value={customStartDate}
-                  onChange={(e) => setCustomStartDate(e.target.value)}
-                  className="px-2 py-2 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  max={customEndDate || new Date().toISOString().split('T')[0]}
-                />
-                <span className="text-gray-500">-</span>
-                <input
-                  type="date"
-                  value={customEndDate}
-                  onChange={(e) => setCustomEndDate(e.target.value)}
-                  className="px-2 py-2 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  min={customStartDate}
-                  max={new Date().toISOString().split('T')[0]}
-                />
-              </>
-            )}
-          </div>
+          {/* Time Range Selector removed to use default latest results */}
           
           <button
             onClick={loadProofs}
