@@ -16,14 +16,10 @@ import {
 } from '@ant-design/icons';
 import { createRedPacket } from './RedPackageCreat';// 创建红包
 import { claimRedPacket } from './ClaimRedPacket'; // 添加领红包
-import { Spin } from 'antd';
-//import NFT_ABI from './path/to/NFT_ABI.json'; // 导入 NFT 合约 ABI（请替换为实际路径）
 
 const { Option } = Select;
 const { Header, Sider, Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
-
-
 
 function Chat({ account, xmtpClient, setXmtpClient }) {
   console.log('Chat组件渲染 - xmtpClient:', xmtpClient ? '已连接' : '未连接');
@@ -43,6 +39,8 @@ const [claimingPacketId, setClaimingPacketId] = useState(null);
     if (!account) return '';
     return `${account.slice(0, 6)}...${account.slice(-4)}`;
   };
+   const tier = localStorage.getItem('nftTier'); // 从 localStorage 中读取 tier
+   console.log("从 localStorage 中读取的 NFT 等级:", tier);
   // XMTP聊天相关状态
  const [conversations, setConversations] = useState([
     {
@@ -57,16 +55,16 @@ const [claimingPacketId, setClaimingPacketId] = useState(null);
   ]); 
   const [messages, setMessages] = useState([
     {
-      id: '1',
+      id: '1',   
       content: '123',
-      sender: '0x0787...2388',
+      sender: '0x1787...4561',
       time: '2025/09/29 10:31:14',
       type: 'text'
     },
     {
       id: '2',
       content: '123',
-      sender: '0x0787...2388',
+      sender: '0x1787...4561',
       time: '2025/09/29 10:31:21',
       type: 'text'
     }
@@ -75,8 +73,7 @@ const [claimingPacketId, setClaimingPacketId] = useState(null);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [userAvatar, setUserAvatar] = useState('');
-  const [nftInfo, setNftInfo] = useState(null); // 存储 NFT 信息
-  //const [databaseError, setDatabaseError] = useState(false);
+  
 
   // 初始化 XMTP 客户端（如果未初始化）
   useEffect(() => {
@@ -104,15 +101,9 @@ const [claimingPacketId, setClaimingPacketId] = useState(null);
         //创建一个以太坊提供者（Provider），用于连接区块链网络。它充当应用与以太坊之间的桥梁，能查询数据（如余额、交易）或发送请求。
         //window.ethereum 是 MetaMask 注入的全局对象，提供 RPC 接口，让浏览器应用与以太坊交互。
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        //获取一个签名器（Signer），用于对交易进行签名。它需要用户授权才能操作其资产，从提供者获取一个签名者（Signer），用于签名消息或交易，而不暴露私钥。
         const signer = provider.getSigner();
-        //获取用户地址（Address），用于标识用户在 XMTP 网络中的唯一身份。
         const address = await signer.getAddress();
-        console.log('Signer:', signer);
-        console.log('Address:', address);
-        // 初始化 XMTP 客户端 - 使用标准方式
-       // const client = await Client.create(signer, { env: 'dev' });
-       const client = await Client.create({
+        const client = await Client.create({
         type: 'EOA',
         getIdentifier: () => ({ identifier: address, identifierKind: 'Ethereum' }),
         signMessage: async (message) => { const sigHex = await signer.signMessage(message); return ethers.utils.arrayify(sigHex); }
@@ -123,39 +114,15 @@ const [claimingPacketId, setClaimingPacketId] = useState(null);
 
         // 保存到 localStorage（注意：client 对象可能无法直接序列化）
         localStorage.setItem('dchat_xmtp_client_initialized', 'true');
-
+      console.log("1111",111111);    
       } catch (error) {
         console.error('初始化 XMTP 客户端失败:', error);
         console.error('错误详情:', error.message);
         AntMessage.error(`初始化 XMTP 失败: ${error.message}`);
       }
-console.log("1111",111111);
-const RPC_URL = process.env.REACT_APP_RPC_URL;    
-const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
-        // 合约 ABI
-const ABI = [
-  "function getNFTLevel(uint256 tokenId) view returns (uint256)", // 新增等级查询方法
-  "function balanceOf(address owner) view returns (uint256)", // 已有（用于获取NFT数量）
-  "function getFirstTokenOfOwner(address owner) external view returns (uint256 tokenId,Tier tier,string memory uri)", // 已有（用于获取tokenId）
-  "function claim(uint256 packetId, uint256 tokenId) external",
-  "event PacketClaimed(uint256 indexed packetId, address indexed claimer, uint256 amount)"
-];
-    const contract = new ethers.Contract(contractAddress, ABI, provider);
-    const nftInfo =  await contract.getFirstTokenOfOwner(account);
-    console.log(`目标地址 ${contractAddress} 的 NFT 信息: ${nftInfo}`);
-    const tokenId = nftInfo.tokenId.toNumber();
-    const tier = nftInfo.tier;
-    const uri = nftInfo.uri;
-    console.log(`目标地址 ${contractAddress} 的 NFT tokenId: ${tokenId}`);
-    console.log(`目标地址 ${contractAddress} 的 NFT tier: ${tier}`);
-    console.log(`目标地址 ${contractAddress} 的 NFT uri: ${uri}`);
-     // 如果需要，将 nftInfo 保存到状态
-     setNftInfo(nftInfo); 
+
     }
-    
-
-
-    initializeXmtpClient();
+   initializeXmtpClient();
   }, [account, xmtpClient, setXmtpClient]);
    const getXmtpClient = async () => {
     if (xmtpClient) {
@@ -169,6 +136,7 @@ const ABI = [
     }
     return xmtpClient;
   };
+
 
   // 加载 XMTP 会话
   useEffect(() => {
@@ -357,11 +325,20 @@ const ABI = [
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const userAddress = await signer.getAddress(); // 获取当前账户地址
-      console.log(userAddress,'userAddress')
-  
-       const tier = nftInfo ? nftInfo.tier : null; // 从 nftInfo 提取 tier（基于第 146 行）
+     // console.log(userAddress,'userAddress')
+      console.log("当前账户地址:", userAddress);
+      
       if (!tier) {
         AntMessage.error('无法获取 NFT tier');
+        return;
+      }
+  
+      const packetTypeString = packetType.toString();
+      if (tier === '0' && packetTypeString !== '0') {
+        AntMessage.error('您的 NFT 等级仅支持领取普通红包');
+        return;
+      } else if (tier === '1' && packetTypeString === '1') {
+        AntMessage.error('您的 NFT 等级仅支持领取普通和高级红包');
         return;
       }
 
@@ -752,6 +729,11 @@ console.log(conversation,'handleSelectConversation+conversation')
               <Button type="primary" onClick={() => setModalVisible(true)} size="small">
                 创建群聊
               </Button>
+              <span style={{ marginLeft: '40px',fontSize: '20px' }}>
+                {tier === '0' && '🥉'}
+                {tier === '1' && '🥈'}
+                {tier === '2' && '🏅'}
+              </span>
               <Dropdown overlay={conversationMenu}>
                 <Button icon={<MoreOutlined />} type="text" size="small" />
               </Dropdown>

@@ -5,24 +5,10 @@
   --token-13922c52-4e64-4234-b13e-e820044d283c: #7916f3;
   --token-b84c5d9e-a55f-48c3-8bd9-e721870093e1: #14101a;
 }
-
+/*
 .main-content {
-  background: linear-gradient(135deg, 
-    #1c2f6e 0%, 
-    #05054e 10%, 
-    #4c1d95 25%, 
-    #8826b2 45%, 
-    #9424b3 70%, 
-    var(--token-b84c5d9e-a55f-48c3-8bd9-e721870093e1) 100%);
-  min-height: calc(100vh - 80px); /* 减去头部高度，避免溢出 */
-  color: white;
-  padding: 2rem;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+  background-image: url('/public/imagecopy21.png');
+}*/
 
 /* 新的用户卡片布局 - 错落有致的分布 */
 .user-cards-layout {
@@ -35,7 +21,10 @@
   margin: 0 auto;
   align-items: center;
   justify-items: center;
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   min-height: 600px;
 }
 

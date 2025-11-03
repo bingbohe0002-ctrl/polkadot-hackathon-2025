@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import Header from './Header';
+//import Header from './Header';
 import MainContent from './MainContent';
 import './Login.css';
 import { Client } from '@xmtp/browser-sdk';
@@ -11,7 +11,11 @@ import { Client } from '@xmtp/browser-sdk';
 
 export default function Login({ setAccount, setXmtpClient }) {
   const [nftInfo, setNftInfo] = useState(null); // 存储 NFT 信息
-
+// 合约 ABI
+const NFT_ABI = [
+  'function balanceOf(address owner) view returns (uint256)',
+  'function getFirstTokenOfOwner(address owner) external view returns (uint256 tokenId, uint8 tier, string memory uri)'  // 已有（用于获取NFT数量）
+];
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
@@ -60,31 +64,27 @@ export default function Login({ setAccount, setXmtpClient }) {
       localStorage.setItem('dchat_login_time', Date.now().toString());
       localStorage.setItem('dchat_xmtp_client_initialized', 'true');
       console.log("1111",111111);
-const RPC_URL = process.env.REACT_APP_RPC_URL;    
-const nftprovider = new ethers.providers.JsonRpcProvider(RPC_URL);
- const contractAddress = process.env.REACT_APP_NFT_CONTRACT_ADDRESS;
 
-    /*    // 合约 ABI
-const ABI = [
-  "function getNFTLevel(uint256 tokenId) view returns (uint256)", // 新增等级查询方法
-  "function balanceOf(address owner) view returns (uint256)", // 已有（用于获取NFT数量）
-  "function getFirstTokenOfOwner(address owner) external view returns (uint256 tokenId,Tier tier,string memory uri)", // 已有（用于获取tokenId）
-  "function claim(uint256 packetId, uint256 tokenId) external",
-  "event PacketClaimed(uint256 indexed packetId, address indexed claimer, uint256 amount)"
-];
-    const contract = new ethers.Contract(contractAddress, ABI, nftprovider);
-    const nftInfo =  await contract.getFirstTokenOfOwner(address);
-    console.log(`目标地址 ${contractAddress} 的 NFT 信息: ${nftInfo}`);
-    const tokenId = nftInfo.tokenId.toNumber();
-    const tier = nftInfo.tier;
-    const uri = nftInfo.uri;
-    console.log(`目标地址 ${contractAddress} 的 NFT tokenId: ${tokenId}`);
-    console.log(`目标地址 ${contractAddress} 的 NFT tier: ${tier}`);
-    console.log(`目标地址 ${contractAddress} 的 NFT uri: ${uri}`);
-     // 如果需要，将 nftInfo 保存到状态
-     setNftInfo(nftInfo); */
+    //获取账户的nft等级
+    // 从配置中读取红包合约地址
+      const contractAddress = process.env.REACT_APP_NFT_CONTRACT_ADDRESS;
+      console.log('合约地址:', contractAddress);
+
+      //创建nft实例
+     const nftContract = new ethers.Contract(
+        process.env.REACT_APP_NFT_CONTRACT_ADDRESS,
+        NFT_ABI,
+        provider
+      );
+      console.log('钱包地址',address);
+      console.log('provider',provider);
+      const { tokenId, tier, uri } = await nftContract.getFirstTokenOfOwner(address);
+      setNftInfo({ tier, tokenId, uri });
+      localStorage.setItem('nftTier', tier);
+      console.log("NFT等级:", tier);
+
       // 导航到聊天页面
-      navigate('/chat');
+      navigate('/chat', { state: { tier } });
     } catch (e) {
       console.error(e);
       setErr(e?.message || '连接失败，请重试');
@@ -160,19 +160,12 @@ const ABI = [
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.4 }}
         >
-          连接到 Paseo PassetHub，开始去中心化聊天
         </motion.p>
       </motion.div>
     </motion.div>
   );
 
   return (
-    <div className="login-page-container">
-      {/* Header 组件 */}
-      <Header />
-      
-      {/* MainContent 组件，传递登录面板 */}
-      <MainContent loginPanel={loginPanel} />
-    </div>
+    <MainContent loginPanel={loginPanel} />
   );
 }

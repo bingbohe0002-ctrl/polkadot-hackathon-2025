@@ -40,7 +40,7 @@
 
 .message-bubble {
   position: relative; /* 为小尾巴的绝对定位提供参照 */
-  background: linear-gradient(135deg, #7b4397, #dc2430);
+  background: linear-gradient(135deg, #c876da, #3f8ca1);
   color: white;
   padding: 1rem;
   border-radius: 1rem;
@@ -57,7 +57,7 @@
   height: 0;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
-  border-right: 10px solid #dc2430; /* 与气泡右侧颜色一致 */
+  border-right: 10px solid #d653c5; /* 与气泡右侧颜色一致 */
 }
 
 .message-content {

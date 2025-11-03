@@ -22,7 +22,7 @@ const InviteGroup = ({ selectedGroupId,selectedConversation, account }) => {
     }
 
     try {
-          const inviteUrl = `http://localhost:3001/join?group=${selectedConversation.id}&inviterid=${account}`;
+          const inviteUrl = `http://localhost:3000/join?group=${selectedConversation.id}&inviterid=${account}`;
           setInviteLink(inviteUrl);
          setInviteModalVisible(true);
        

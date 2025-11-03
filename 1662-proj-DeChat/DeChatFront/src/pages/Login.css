@@ -1,10 +1,10 @@
-.login-page-container {
-  position: relative;
-  width: 100vw;
-  min-height: 100vh;
-  overflow: hidden;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding-bottom: 40px;
+body {
+  background-image: url('/public/imagecopy21.png');
+  background-repeat: repeat; /* 设置背景图片平铺 */
+  background-position: top left; /* 背景图片从左上角开始 */
+  background-size: auto; /* 保持图片原始大小 */
+  margin: 0;
+  padding: 0;
 }
 
 .login-wrapper {
@@ -25,7 +25,7 @@
 }
 
 .login-title {
-  font-size: 2.5rem;
+  font-size: 80px;
   font-weight: 700; /* 加粗 */
   margin: 1.5rem 0;}
 
@@ -43,7 +43,7 @@
 }
 
 .login-description {
-  font-size: 1.2rem;
+  font-size: 2rem;
   line-height: 1.6;
   white-space: nowrap; /* 防止换行 */
   overflow: hidden;    /* 隐藏溢出内容 */

@@ -10,14 +10,14 @@ const JoinGroup = () => {
   const [account, setAccount] = useState(null);
   const [xmtpClient, setXmtpClient] = useState(null); // 存储 XMTP 客户端
 
- // const [xmtpClient, setXmtpClient] = useState(null);
   const [loading, setLoading] = useState(false);
-  // 存储用户的 NFT 等级
+  // 存储用户的 NFT 数量
   const [nftBalance, setNftBalance] = useState(0);
+  const [tier, setTier] = useState(null); // 存储用户的 NFT 等级
 // 合约 ABI
 const NFT_ABI = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function getFirstTokenOfOwner(address owner) external view returns (uint256 tokenId, Tier tier, string memory uri)",   // 已有（用于获取NFT数量）
+  'function balanceOf(address owner) view returns (uint256)',
+  'function getFirstTokenOfOwner(address owner) external view returns (uint256 tokenId, uint8 tier, string memory uri)'  // 已有（用于获取NFT数量）
 ];
   // 检查并连接 MetaMask
   const connectMetaMask = async () => {
@@ -49,8 +49,10 @@ const NFT_ABI = [
       );
 
       
-      const balance = await nftContract.balanceOf(address);
-      setNftBalance(balance.toNumber());
+      const { tokenId, tier, uri } = await nftContract.getFirstTokenOfOwner(address);
+      setNftBalance(tokenId.toNumber());
+      console.log("tier:", tier, "uri:", uri);
+      setTier(tier);
 
       return address;
     } catch (error) {
@@ -113,7 +115,7 @@ const handleJoin = async () => {
       NFT_ABI,
       provider
     );
-    const balance = await nftContract.balanceOf(account);
+    const balance = await nftContract.getFirstTokenOfOwner(account);
     if (balance.eq(0)) {
       message.error('您没有 NFT，不能入群');
       return;
@@ -250,7 +252,7 @@ const handleJoin = async () => {
       {account ? (
         <>
           <p>当前钱包: {account}</p>
-          <p>您的 NFT 等级: {nftBalance}</p>
+          <p>您的 NFT 等级: {tier}</p>
         </>
       ) : (
         <Button onClick={connectMetaMask}>连接 MetaMask</Button>

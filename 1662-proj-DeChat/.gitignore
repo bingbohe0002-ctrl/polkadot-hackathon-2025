@@ -62,3 +62,6 @@ ignition/deployments/chain-31337
 
 # macOS 系统文件
 .DS_Store
+
+# readme
+README.md
